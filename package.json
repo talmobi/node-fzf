@@ -1,0 +1,30 @@
+{
+  "name": "node-fzf",
+  "version": "0.0.0",
+  "description": "TODO",
+  "main": "fzf.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "fzf"
+  ],
+  "author": "talmobi <talmo.christian@gmail.com>",
+  "license": "UNLICENSED",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/talmobi/fzf"
+  },
+  "bugs": {
+    "url": "https://github.com/talmobi/fzf/issues",
+    "email": "talmo.christian@gmail.com"
+  },
+  "dependencies": {
+    "cli-color": "~1.2.0",
+    "keypress": "~0.2.1",
+    "minimist": "~1.2.0",
+    "redstar": "0.0.2"
+  },
+  "devDependencies": {}
+}
