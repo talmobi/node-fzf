@@ -32,6 +32,7 @@ function start ( _list, callback )
 
   let selectionOffset = 0
   let buffer = ''
+  let _printedMatches = 0
 
   let list = _list || []
 
@@ -235,7 +236,7 @@ function start ( _list, callback )
     const width = clc.windowSize.width
     const writtenHeight = Math.max(
       MIN_HEIGHT,
-      2 + matches.length
+      2 + _printedMatches
     )
 
     stdout.write( clc.move( -width ) )
@@ -288,8 +289,18 @@ function start ( _list, callback )
       selectedItem = matches[ 0 ]
     }
 
+    _printedMatches = 0
+
+    const maxPrintLength = Math.min( matches.length, MIN_HEIGHT )
+
+    const startIndex = Math.max( 0, offset - maxPrintLength + Math.ceil( MIN_HEIGHT * 0.25 ) )
+
+    const matchLimit = Math.min( maxPrintLength + startIndex, matches.length )
+
     // print matches
-    for ( let i = 0; i < matches.length ; i++ ) {
+    for ( let i = startIndex; i < matchLimit; i++ ) {
+      _printedMatches++
+
       const match = matches[ i ]
 
       const item = match.colored
@@ -311,7 +322,7 @@ function start ( _list, callback )
       }
     }
 
-    stdout.write( clc.move.up( 2 + matches.length ) )
+    stdout.write( clc.move.up( 2 + _printedMatches ) )
     stdout.write( clc.move.right( 1 + buffer.length + 1 ) )
   }
 
