@@ -205,23 +205,71 @@ function start ( _list, callback )
     for ( let i = 0; i < list.length; i++ ) {
       const originalIndex = i
       const item = list[ i ]
-      const matches = fuzzyMatches( fuzz, item )
+      const normalizedItem = item.split( /\s+/ ).join( ' ' )
+      const matches = fuzzyMatches( fuzz, normalizedItem )
 
       if ( matches.length === fuzz.length ) {
         // matches
-        let t = item
+        let t = normalizedItem
+
+        const paintBucket = [] // characters to colorize at the end
 
         for ( let i = 0; i < matches.length; i++ ) {
-          const index = matches[ matches.length - ( i + 1 ) ]
+          const index = matches[ i ]
+          paintBucket.push( { index: index, clc: clcFgMatchGreen } )
+        }
 
-          const c = clcFgMatchGreen( t[ index ] )
+        const len = t.length
+        const maxLen = getMaxWidth() // terminal width
+
+        // shift left until the last matched fuzzy character is visible
+        const lastMatchIndex = matches[ matches.length - 1 ]
+        const marginRight = Math.ceil( clc.windowSize.width * 0.4 )
+
+        let matchMarginRight = ( lastMatchIndex + marginRight )
+        // limit too much unnecessary empty margin
+        if ( matchMarginRight > ( t.length + 8 ) ) matchMarginRight = ( t.length + 8 )
+
+        const shiftRight = ( maxLen - matchMarginRight )
+        let shiftAmount = 0
+        let startIndex = 0
+        let endIndex = t.length
+
+        if ( shiftRight < 0 ) {
+          // we need to shift so that the matched text and margin is in view
+          shiftAmount = -shiftRight
+          t = '...' + t.slice( shiftAmount )
+
+          startIndex = 3
+        }
+
+        if ( t.length > maxLen ) {
+          t = t.slice( 0, maxLen ) + '...'
+          endIndex = maxLen
+        }
+
+        // colorise fuzzy matched characters
+        // in reverse because invisible ANSI color characters increases
+        // string length
+        paintBucket.sort( function ( a, b ) {
+          return b.index - a.index
+        } )
+        for ( let i = 0; i < paintBucket.length; i++ ) {
+          const paint = paintBucket[ i ]
+          const index = paint.index - shiftAmount + startIndex
+
+          // skip fuzzy chars that have shifted out of view
+          if ( index < startIndex ) continue
+          if ( index > endIndex ) continue
+
+          const c = paint.clc( t[ index ] )
           t = t.slice( 0, index ) + c + t.slice( index + 1 )
         }
 
         results.push( {
           originalIndex: originalIndex,
           original: item,
-          colored: t
+          text: t // what shows up on terminal/screen
         } )
       }
     }
@@ -297,7 +345,14 @@ function start ( _list, callback )
 
     const maxPrintLength = Math.min( matches.length, MIN_HEIGHT )
 
-    const startIndex = Math.max( 0, offset - maxPrintLength + Math.ceil( MIN_HEIGHT * 0.25 ) )
+    let paddingBottom = 2 // 1 extra padding at the bottom when scrolling down
+    if ( matches.length <= MIN_HEIGHT ) {
+      // no extra padding at the bottom since there is no room for it
+      // - othewise first match is cut off and will not be visible
+      paddingBottom = 1
+    }
+
+    const startIndex = Math.max( 0, offset - maxPrintLength + paddingBottom )
 
     const matchLimit = Math.min( maxPrintLength + startIndex, matches.length )
 
@@ -307,7 +362,7 @@ function start ( _list, callback )
 
       const match = matches[ i ]
 
-      const item = match.colored
+      const item = match.text
 
       const itemSelected = (
         ( offset === i )
