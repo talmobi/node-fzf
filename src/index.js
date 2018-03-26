@@ -5,6 +5,8 @@ const ttys = require( 'ttys' )
 const stdin = ttys.stdin
 const stdout = ttys.stdout
 
+const stringWidth = require( 'string-width' )
+
 const clc = require( 'cli-color' )
 
 module.exports = start
@@ -228,7 +230,7 @@ function start ( _list, callback )
           paintBucket.push( { index: index, clc: clcFgMatchGreen } )
         }
 
-        const len = t.length
+        let len = stringWidth( t ) // use string-width to keep length in check
         const maxLen = getMaxWidth() // terminal width
 
         // shift left until the last matched fuzzy character is visible
@@ -237,12 +239,12 @@ function start ( _list, callback )
 
         let matchMarginRight = ( lastMatchIndex + marginRight )
         // limit too much unnecessary empty margin
-        if ( matchMarginRight > ( t.length + 8 ) ) matchMarginRight = ( t.length + 8 )
+        if ( matchMarginRight > ( len + 8 ) ) matchMarginRight = ( len + 8 )
 
         const shiftRight = ( maxLen - matchMarginRight )
         let shiftAmount = 0
         let startIndex = 0
-        let endIndex = t.length
+        let endIndex = len
 
         if ( shiftRight < 0 ) {
           // we need to shift so that the matched text and margin is in view
@@ -252,7 +254,8 @@ function start ( _list, callback )
           startIndex = 3
         }
 
-        if ( t.length > maxLen ) {
+        len = stringWidth( t )
+        if ( len > maxLen ) {
           t = t.slice( 0, maxLen ) + '...'
           endIndex = maxLen
         }
