@@ -87,6 +87,15 @@ function start ( _list, callback )
           // ignore
           break
 
+        case 'd': // down
+          selectionOffset += 10
+          return render()
+          break
+        case 'u': // up
+          selectionOffset -= 10
+          return render()
+          break
+
         case 'w': // clear fuzzy word
           buffer = ''
           render()
