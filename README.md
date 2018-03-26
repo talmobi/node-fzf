@@ -37,6 +37,23 @@ setInterval( function () {
 }, 1000 )
 ```
 
+### Keys
+```bash
+<ctrl-j>,down                 scroll down
+<ctrl-k>,up                   scroll up
+
+<ctrl-d>                      scroll down by 10
+<ctrl-u>                      scroll up by 10
+
+<esc>,<ctrl-q>,<ctrl-c>       cancel
+
+<return>,<ctrl-m>             trigger callback with current selection and exit
+
+<ctrl-w>                      clear current fuzzy search
+
+<backspace>                   delete last fuzzy search character
+```
+
 # About
 [fzf](https://github.com/junegunn/fzf) inspired fuzzy CLI list selection thing for node.
 
@@ -48,6 +65,11 @@ Mostly [cli-color](https://github.com/medikoo/cli-color) for dealing with the te
 and [ttys](https://github.com/TooTallNate/ttys) to hack the ttys to simultaneously
 read from non TTY stdin and read key inputs from TTY stdin -> So that we can get piped input while
 also at the same time receive and handle raw keyboard input.
+
+# Used by
+[yt-play](https://github.com/talmobi/yt-play)
+
+[yt-search](https://github.com/talmobi/yt-search)
 
 # Alternatives
 [fzf](https://github.com/junegunn/fzf) even though it doesn't work in NodeJS directly is all-in-all a better tool than this piece of crap :) Highly recommend~
