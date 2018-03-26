@@ -41,6 +41,10 @@ function start ( _list, callback )
 
   const MIN_HEIGHT = 6
 
+  function getMaxWidth () {
+    return clc.windowSize.width - 7
+  }
+
   const debug = false
 
   function handleKeypress ( chunk, key ) {
