@@ -1,262 +1,324 @@
 const keypress = require( 'keypress' )
 
+const ttys = require( 'ttys' )
+
+const stdin = ttys.stdin
+const stdout = ttys.stdout
+
 const clc = require( 'cli-color' )
-const glob = require( 'redstar' )
 
-const argv = require( 'minimist' )( process.argv.slice( 2 ) )
+module.exports = start
 
-// make `process.stdin` begin emitting "keypress" events
-keypress( process.stdin )
+function start ( _list, callback )
+{
+  const api = {}
 
-let selectionOffset = 0
-let buffer = ''
-let list = []
-
-let matches = []
-let selectedItem
-
-const MIN_HEIGHT = 6
-
-if ( ! argv._.length ) {
-  glob( '**', function ( err, files, dirs ) {
-    if ( err ) throw err
-
-    list = list.concat( files )
-
+  api.update = function ( _list ) {
+    list = _list.slice()
     render()
-  } )
-}
-
-const debug = false
-
-process.stdin.setEncoding( 'utf8' )
-process.stdin.on( 'keypress', function ( chunk, key ) {
-  debug && console.log( 'chunk: ' + chunk )
-
-  key = key || { name: '' }
-
-  const name = String( key.name )
-
-  debug && console.log( 'got "keypress"', key )
-
-  if ( key && key.ctrl && name === 'c' ) {
-    return process.stdin.pause()
   }
 
-  if ( key && key.ctrl && name === 'l' ) {
-    return process.stdout.write( clc.reset )
+  api.stop = stop
+
+  function stop () {
+    stdin.removeListener( 'keypress', handleKeypress )
+
+    stdin.setRawMode && stdin.setRawMode( false )
+    stdin.pause()
   }
 
-  if ( key.ctrl ) {
+  // make `process.stdin` begin emitting "keypress" events
+  keypress( stdin )
+
+  let selectionOffset = 0
+  let buffer = ''
+
+  let list = _list || []
+
+  let matches = []
+  let selectedItem
+
+  const MIN_HEIGHT = 6
+
+  const debug = false
+
+  function handleKeypress ( chunk, key ) {
+    debug && console.log( 'chunk: ' + chunk )
+
+    key = key || { name: '' }
+
+    const name = String( key.name )
+
+    debug && console.log( 'got "keypress"', key )
+
+    if ( key && key.ctrl && name === 'c' ) {
+      cleanDirtyScreen()
+      return stop()
+    }
+
+    if ( key && key.ctrl && name === 'z' ) {
+      cleanDirtyScreen()
+      return stop()
+    }
+
+    if ( key && key.ctrl && name === 'l' ) {
+      // return stdout.write( clc.reset )
+    }
+
+    if ( key.ctrl ) {
+      switch ( name ) {
+        case 'h': // left
+          // ignore
+          break
+        case 'j': // down
+          selectionOffset += 1
+          return render()
+          break
+        case 'k': // up
+          selectionOffset -= 1
+          return render()
+          break
+        case 'l': // right
+          // ignore
+          break
+
+        case 'w': // clear fuzzy word
+          buffer = ''
+          render()
+          break
+
+        case 'q': // quit
+          cleanDirtyScreen()
+          stop()
+          break
+      }
+    }
+
+    if ( key.ctrl ) return
+    if ( key.meta ) return
+
     switch ( name ) {
-      case 'h': // left
-        // ignore
+      case 'backspace':
+        buffer = buffer.slice( 0, -1 )
+        return render()
         break
-      case 'j': // down
+
+      // text terminals treat ctrl-j as newline ( enter )
+      // ref: https://ss64.com/bash/syntax-keyboard.html
+      case 'down':
+      case 'enter':
         selectionOffset += 1
         return render()
         break
-      case 'k': // up
+
+      case 'up':
         selectionOffset -= 1
         return render()
         break
-      case 'l': // right
-        // ignore
+
+      case 'esc':
+      case 'escape':
+        cleanDirtyScreen()
+        return stop()
         break
 
-      case 'w': // clear fuzzy word
-        buffer = ''
-        render()
+      // hit enter key ( or ctrl-m )
+      case 'return':
+        cleanDirtyScreen()
+        stop()
+
+        if ( callback ) {
+          if ( selectedItem ) {
+            callback(
+              selectedItem.original,
+              selectedItem.originalIndex
+            )
+          } else {
+            callback( null )
+          }
+        }
+
+        return
         break
     }
-  }
 
-  if ( key.ctrl ) return
-  if ( key.meta ) return
-
-  switch ( name ) {
-    case 'backspace':
-      buffer = buffer.slice( 0, -1 )
-      return render()
-      break
-
-    // text terminals treat ctrl-j as newline ( enter )
-    // ref: https://ss64.com/bash/syntax-keyboard.html
-    case 'enter':
-      selectionOffset += 1
-      return render()
-      break
-
-    // hit enter key ( or ctrl-m )
-    case 'return':
-      for ( let i = 0; i < MIN_HEIGHT; i++ ) {
-        process.stdout.write( clc.erase.line )
-        process.stdout.write( clc.move.down( 1 ) )
+    if ( chunk && chunk.length === 1 ) {
+      if ( key.shift ) {
+        buffer += chunk.toUpperCase()
+      } else {
+        buffer += chunk
       }
-      process.stdout.write( clc.move.up( MIN_HEIGHT ) )
 
-      console.log( selectedItem )
-      process.exit()
-      break
-      // TODO select item
-  }
-
-  if ( chunk && chunk.length === 1 ) {
-    if ( key.shift ) {
-      buffer += chunk.toUpperCase()
-    } else {
-      buffer += chunk
-    }
-
-    render()
-  }
-} )
-
-const clcBgGray = clc.bgXterm( 236 )
-const clcFgArrow = clc.xterm( 198 )
-const clcFgBufferArrow = clc.xterm( 110 )
-const clcFgGreen = clc.xterm( 143 )
-// const clcFgMatchGreen = clc.xterm( 151 )
-const clcFgMatchGreen = clc.xterm( 107 )
-
-function fuzzyMatch ( fuzz, text )
-{
-  const matches = fuzzyMatches( fuzz, text )
-  return matches.length === fuzz.length
-}
-
-function fuzzyMatches ( fuzz, text )
-{
-  fuzz = fuzz.toLowerCase()
-  text = text.toLowerCase()
-
-  let tp = 0 // text position/pointer
-  let matches = []
-
-  for ( let i = 0; i < fuzz.length; i++ ) {
-    const f = fuzz[ i ]
-
-    for ( ; tp < text.length; tp++ ) {
-      const t = text[ tp ]
-      if ( f === t ) {
-        matches.push( tp )
-        tp++
-        break
-      }
+      render()
     }
   }
 
-  return matches
-}
+  stdin.setEncoding( 'utf8' )
+  stdin.on( 'keypress', handleKeypress )
 
-function fuzzyList ( fuzz, list )
-{
-  const results = []
+  const clcBgGray = clc.bgXterm( 236 )
+  const clcFgArrow = clc.xterm( 198 )
+  const clcFgBufferArrow = clc.xterm( 110 )
+  const clcFgGreen = clc.xterm( 143 )
+  // const clcFgMatchGreen = clc.xterm( 151 )
+  const clcFgMatchGreen = clc.xterm( 107 )
 
-  for ( let i = 0; i < list.length; i++ ) {
-    const item = list[ i ]
-    const matches = fuzzyMatches( fuzz, item )
+  function fuzzyMatch ( fuzz, text )
+  {
+    const matches = fuzzyMatches( fuzz, text )
+    return matches.length === fuzz.length
+  }
 
-    if ( matches.length === fuzz.length ) {
-      // matches
-      let t = item
+  function fuzzyMatches ( fuzz, text )
+  {
+    fuzz = fuzz.toLowerCase()
+    text = text.toLowerCase()
 
-      for ( let i = 0; i < matches.length; i++ ) {
-        const index = matches[ matches.length - ( i + 1 ) ]
+    let tp = 0 // text position/pointer
+    let matches = []
 
-        const c = clcFgMatchGreen( t[ index ] )
-        t = t.slice( 0, index ) + c + t.slice( index + 1 )
+    for ( let i = 0; i < fuzz.length; i++ ) {
+      const f = fuzz[ i ]
+
+      for ( ; tp < text.length; tp++ ) {
+        const t = text[ tp ]
+        if ( f === t ) {
+          matches.push( tp )
+          tp++
+          break
+        }
       }
-
-      results.push( {
-        original: item,
-        colored: t
-      } )
     }
+
+    return matches
   }
 
-  // sorts in-place
-  results.sort( function ( a, b ) {
-    if ( a.original < b.original ) return -1
-    return 1
-  } )
+  function fuzzyList ( fuzz, list )
+  {
+    const results = []
 
-  return results
-}
+    for ( let i = 0; i < list.length; i++ ) {
+      const originalIndex = i
+      const item = list[ i ]
+      const matches = fuzzyMatches( fuzz, item )
 
-function render ()
-{
-  const width = clc.windowSize.width
-  const height = clc.windowSize.height
-  // console.log( 'window height: ' + height )
-  // !debug && process.stdout.write( clc.erase.screen )
-  // process.stdout.write( clc.move.to( 0, height ) )
+      if ( matches.length === fuzz.length ) {
+        // matches
+        let t = item
 
-  const writtenHeight = Math.max(
-    MIN_HEIGHT,
-    2 + matches.length
-  )
+        for ( let i = 0; i < matches.length; i++ ) {
+          const index = matches[ matches.length - ( i + 1 ) ]
 
-  process.stdout.write( clc.move( -width ) )
+          const c = clcFgMatchGreen( t[ index ] )
+          t = t.slice( 0, index ) + c + t.slice( index + 1 )
+        }
 
-  for ( let i = 0; i < writtenHeight; i++ ) {
-    process.stdout.write( clc.erase.line )
-    process.stdout.write( clc.move.down( 1 ) )
-  }
-  process.stdout.write( clc.move.up( writtenHeight ) )
+        results.push( {
+          originalIndex: originalIndex,
+          original: item,
+          colored: t
+        } )
+      }
+    }
 
-  // calculate matches
-  matches = fuzzyList( buffer, list )
-  let offset = selectionOffset
+    // sorts in-place
+    results.sort( function ( a, b ) {
+      if ( a.original < b.original ) return -1
+      return 1
+    } )
 
-  if ( offset >= matches.length ) {
-    offset = matches.length - 1
-  }
-
-  if ( offset < 0 ) {
-    offset = 0
+    return results
   }
 
-  // save the normalized offset
-  selectionOffset = offset
-
-  // print buffer arrow
-  process.stdout.write( clcFgBufferArrow( '> ' ) )
-  process.stdout.write( buffer )
-  process.stdout.write( '\n' )
-
-  // print matches
-  const n = matches.length
-  process.stdout.write( '  ' )
-  process.stdout.write( clcFgGreen( n + '/' + list.length ) )
-  process.stdout.write( '\n' )
-
-  // print matches
-  for ( let i = 0; i < matches.length ; i++ ) {
-    const match = matches[ i ]
-
-    const item = match.colored
-
-    const itemSelected = (
-      ( offset === i )
+  function cleanDirtyScreen ()
+  {
+    const width = clc.windowSize.width
+    const writtenHeight = Math.max(
+      MIN_HEIGHT,
+      2 + matches.length
     )
 
-    if ( itemSelected ) {
-      selectedItem = match.original
-      process.stdout.write( clcBgGray( clcFgArrow( '> ' ) ) )
-      process.stdout.write( clcBgGray( item ) )
-      process.stdout.write( '\n' )
-    } else {
-      process.stdout.write( clcBgGray( ' ' ) )
-      process.stdout.write( ' ' )
-      process.stdout.write( item )
-      process.stdout.write( '\n' )
+    stdout.write( clc.move( -width ) )
+
+    for ( let i = 0; i < writtenHeight; i++ ) {
+      stdout.write( clc.erase.line )
+      stdout.write( clc.move.down( 1 ) )
     }
+
+    stdout.write( clc.move.up( writtenHeight ) )
   }
 
-  process.stdout.write( clc.move.up( 2 + matches.length ) )
-  process.stdout.write( clc.move.right( 1 + buffer.length + 1 ) )
-}
+  function render ()
+  {
+    const width = clc.windowSize.width
+    const height = clc.windowSize.height
+    // console.log( 'window height: ' + height )
+    // !debug && stdout.write( clc.erase.screen )
+    // stdout.write( clc.move.to( 0, height ) )
 
-process.stdin.setRawMode( true )
-process.stdin.resume()
+    cleanDirtyScreen()
+
+    // calculate matches
+    matches = fuzzyList( buffer, list )
+    let offset = selectionOffset
+
+    if ( offset >= matches.length ) {
+      offset = matches.length - 1
+    }
+
+    if ( offset < 0 ) {
+      offset = 0
+    }
+
+    // save the normalized offset
+    selectionOffset = offset
+
+    // print buffer arrow
+    stdout.write( clcFgBufferArrow( '> ' ) )
+    stdout.write( buffer )
+    stdout.write( '\n' )
+
+    // print matches
+    const n = matches.length
+    stdout.write( '  ' )
+    stdout.write( clcFgGreen( n + '/' + list.length ) )
+    stdout.write( '\n' )
+
+    if ( !selectedItem ) {
+      selectedItem = matches[ 0 ]
+    }
+
+    // print matches
+    for ( let i = 0; i < matches.length ; i++ ) {
+      const match = matches[ i ]
+
+      const item = match.colored
+
+      const itemSelected = (
+        ( offset === i )
+      )
+
+      if ( itemSelected ) {
+        selectedItem = match
+        stdout.write( clcBgGray( clcFgArrow( '> ' ) ) )
+        stdout.write( clcBgGray( item ) )
+        stdout.write( '\n' )
+      } else {
+        stdout.write( clcBgGray( ' ' ) )
+        stdout.write( ' ' )
+        stdout.write( item )
+        stdout.write( '\n' )
+      }
+    }
+
+    stdout.write( clc.move.up( 2 + matches.length ) )
+    stdout.write( clc.move.right( 1 + buffer.length + 1 ) )
+  }
+
+  stdin.setRawMode && stdin.setRawMode( true )
+  stdin.resume()
+
+  render()
+
+  return api
+}
