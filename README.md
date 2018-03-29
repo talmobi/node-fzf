@@ -1,10 +1,14 @@
-#  node-fzf - [fzf](https://github.com/junegunn/fzf) inspired fuzzy CLI list selection 🎀
+[![npm](https://img.shields.io/npm/v/node-fzf.svg?maxAge=3600&style=flat-square)](https://www.npmjs.com/package/node-fzf)
+[![npm](https://img.shields.io/npm/l/node-fzf.svg?maxAge=3600&style=flat-square)](https://github.com/talmobi/node-fzf/blob/master/LICENSE)
+
+#  node-fzf
+[fzf](https://github.com/junegunn/fzf) inspired fuzzy CLI list selection 🎀
 
 ![](https://thumbs.gfycat.com/DisgustingElderlyIbadanmalimbe-size_restricted.gif)
 
-## Simple to use
+## Easy to use
 
-### CLI usage
+#### CLI usage
 ```bash
 npm install -g node-fzf
 
@@ -15,7 +19,7 @@ nfzf
 find . | grep -v node_modules | nfzf
 ```
 
-### API usage
+#### API usage
 ```js
 const nfzf = require( 'node-fzf' )
 
@@ -37,7 +41,7 @@ setInterval( function () {
 }, 1000 )
 ```
 
-### Keys
+#### Keyboard
 ```bash
 <ctrl-j>,down                 scroll down
 <ctrl-k>,up                   scroll up
@@ -54,25 +58,25 @@ setInterval( function () {
 <backspace>                   delete last fuzzy search character
 ```
 
-# About
+## About
 [fzf](https://github.com/junegunn/fzf) inspired fuzzy CLI list selection thing for node.
 
-# Why
+## Why
 easy fuzzy list selection UI for NodeJS CLI programs.
 
-# How
+## How
 Mostly [cli-color](https://github.com/medikoo/cli-color) for dealing with the terminal rendering
 and [ttys](https://github.com/TooTallNate/ttys) to hack the ttys to simultaneously
 read from non TTY stdin and read key inputs from TTY stdin -> So that we can get piped input while
 also at the same time receive and handle raw keyboard input.
 
-# Used by
+## Used by
 [yt-play](https://github.com/talmobi/yt-play)
 
 [yt-search](https://github.com/talmobi/yt-search)
 
-# Alternatives
+## Alternatives
 [fzf](https://github.com/junegunn/fzf) even though it doesn't work in NodeJS directly is all-in-all a better tool than this piece of crap :) Highly recommend~
 
-# Test
+## Test
 No tests..
