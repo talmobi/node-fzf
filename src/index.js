@@ -144,13 +144,10 @@ function start ( _list, callback )
         stop()
 
         if ( callback ) {
-          if ( selectedItem ) {
-            callback(
-              selectedItem.original,
-              selectedItem.originalIndex
-            )
+          if ( selectedItem && matches.indexOf(selectedItem) > -1 ) {
+            callback( { selected: selectedItem } )
           } else {
-            callback( null )
+            callback( { query: buffer } )
           }
         }
 

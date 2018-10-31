@@ -18,14 +18,24 @@ function run ()
     return glob( '**', function ( err, files, dirs ) {
       if ( err ) throw err
 
-      nfzf( files, function ( val, ind ) {
-        console.log( files[ ind ] )
+      nfzf( files, function ( result ) {
+        if ( result.selected ) {
+          console.log( files[ result.ind ] );
+        } else if ( argv['print-query'] ) {
+          console.log();
+          console.log( result.query );
+        }
         process.exit()
       } )
     } )
   } else {
-    const api = nfzf( [], function ( val, ind ) {
-      console.log( val )
+    const api = nfzf( [], function ( result ) {
+      if ( result.selected ) {
+        console.log( result.selected.original )
+      } else if ( argv['print-query'] ) {
+        console.log();
+        console.log( result.query );
+      }
       process.exit()
     } )
 
