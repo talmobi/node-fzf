@@ -143,7 +143,7 @@ function start ( list, callback )
         return stop()
         break
 
-      // hit enter key ( or ctrl-m )
+      // hit return key ( casually also known as enter key )  ( or ctrl-m )
       case 'return':
         cleanDirtyScreen()
         stop()
