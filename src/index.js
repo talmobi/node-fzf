@@ -167,6 +167,17 @@ function start ( list, callback )
           }
         }
 
+        const result = {
+          selected: _selectedItem && transformResult( _selectedItem ) || undefined,
+          matches: _matches.map( transformResult ),
+          list: _list.slice(),
+          query: buffer
+        }
+
+        if ( callback ) {
+          callback( result )
+        }
+
         return
         break
     }
