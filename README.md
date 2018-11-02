@@ -30,12 +30,12 @@ const list = [ 'whale', 'giraffe', 'monkey' ]
 // writing to stdout at the same time it will look a bit messy..
 const api = nfzf( list, function ( result ) {
   const { selected, query } = result;
-  if(!selected) {
-    console.log('No matches for:', query);
+  if( !selected ) {
+    console.log( 'No matches for:', query )
   } else {
-    console.log( selected.original ) // 'giraffe'
-    console.log( selected.originalIndex ) // 1
-    console.log( selected.original === list[ selected.originalIndex ] ) // true
+    console.log( selected.value ) // 'giraffe'
+    console.log( selected.index ) // 1
+    console.log( selected.value === list[ selected.index ] ) // true
   }
 
 } )
@@ -59,7 +59,7 @@ setInterval( function () {
 
 <return>,<ctrl-m>             trigger callback with current selection and exit
 
-<ctrl-w>                      clear current fuzzy search
+<ctrl-w>                      clear last word (whitespace delimited) from fuzzy search
 
 <backspace>                   delete last fuzzy search character
 ```
