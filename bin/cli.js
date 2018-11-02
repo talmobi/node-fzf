@@ -20,10 +20,10 @@ function run ()
 
       nfzf( files, function ( result ) {
         if ( result.selected ) {
-          console.log( files[ result.ind ] );
-        } else if ( argv['print-query'] ) {
-          console.log();
-          console.log( result.query );
+          console.log( files[ result.selected.originalIndex ] )
+        } else if ( argv[ 'print-query' ] ) {
+          console.log()
+          console.log( result.query )
         }
         process.exit()
       } )
@@ -33,10 +33,10 @@ function run ()
 
     const api = nfzf( [], function ( result ) {
       if ( result.selected ) {
-        console.log( result.selected.original )
-      } else if ( argv['print-query'] ) {
-        console.log();
-        console.log( result.query );
+        console.log( result.selected.value )
+      } else if ( argv[ 'print-query' ] ) {
+        console.log()
+        console.log( result.query )
       }
       process.exit()
     } )
