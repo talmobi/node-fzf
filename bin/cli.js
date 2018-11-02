@@ -29,6 +29,8 @@ function run ()
       } )
     } )
   } else {
+    // stream piped input to the list
+
     const api = nfzf( [], function ( result ) {
       if ( result.selected ) {
         console.log( result.selected.original )
