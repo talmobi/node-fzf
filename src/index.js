@@ -11,16 +11,18 @@ const clc = require( 'cli-color' )
 
 module.exports = start
 
-function start ( _list, callback )
+function start ( list, callback )
 {
-  const api = {}
+  const _api = {}
 
-  api.update = function ( _list ) {
-    list = _list.slice()
+  let _list = list || []
+
+  _api.update = function ( list ) {
+    _list = list.slice()
     render()
   }
 
-  api.stop = stop
+  _api.stop = stop
 
   function stop () {
     stdin.removeListener( 'keypress', handleKeypress )
@@ -36,10 +38,8 @@ function start ( _list, callback )
   let buffer = ''
   let _printedMatches = 0
 
-  let list = _list || []
-
-  let matches = []
-  let selectedItem
+  let _matches = []
+  let _selectedItem
 
   const MIN_HEIGHT = 6
 
@@ -326,11 +326,11 @@ function start ( _list, callback )
     cleanDirtyScreen()
 
     // calculate matches
-    matches = fuzzyList( buffer, list )
+    _matches = fuzzyList( buffer, _list )
     let offset = selectionOffset
 
-    if ( offset >= matches.length ) {
-      offset = matches.length - 1
+    if ( offset >= _matches.length ) {
+      offset = _matches.length - 1
     }
 
     if ( offset < 0 ) {
@@ -346,21 +346,23 @@ function start ( _list, callback )
     stdout.write( '\n' )
 
     // print matches
-    const n = matches.length
+    const n = _matches.length
     stdout.write( '  ' )
-    stdout.write( clcFgGreen( n + '/' + list.length ) )
+    stdout.write( clcFgGreen( n + '/' + _list.length ) )
     stdout.write( '\n' )
 
-    if ( !selectedItem ) {
-      selectedItem = matches[ 0 ]
+    // select first item in list by default ( empty fuzzy search matches first
+    // item.. )
+    if ( !_selectedItem ) {
+      _selectedItem = _matches[ 0 ]
     }
 
     _printedMatches = 0
 
-    const maxPrintLength = Math.min( matches.length, MIN_HEIGHT )
+    const maxPrintLength = Math.min( _matches.length, MIN_HEIGHT )
 
     let paddingBottom = 2 // 1 extra padding at the bottom when scrolling down
-    if ( matches.length <= MIN_HEIGHT ) {
+    if ( _matches.length <= MIN_HEIGHT ) {
       // no extra padding at the bottom since there is no room for it
       // - othewise first match is cut off and will not be visible
       paddingBottom = 1
@@ -368,13 +370,13 @@ function start ( _list, callback )
 
     const startIndex = Math.max( 0, offset - maxPrintLength + paddingBottom )
 
-    const matchLimit = Math.min( maxPrintLength + startIndex, matches.length )
+    const matchLimit = Math.min( maxPrintLength + startIndex, _matches.length )
 
     // print matches
     for ( let i = startIndex; i < matchLimit; i++ ) {
       _printedMatches++
 
-      const match = matches[ i ]
+      const match = _matches[ i ]
 
       const item = match.text
 
@@ -383,7 +385,7 @@ function start ( _list, callback )
       )
 
       if ( itemSelected ) {
-        selectedItem = match
+        _selectedItem = match
         stdout.write( clcBgGray( clcFgArrow( '> ' ) ) )
         stdout.write( clcBgGray( item ) )
         stdout.write( '\n' )
@@ -404,5 +406,5 @@ function start ( _list, callback )
 
   render()
 
-  return api
+  return _api
 }
