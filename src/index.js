@@ -397,6 +397,11 @@ function start ( list, callback )
       }
     }
 
+    if ( _printedMatches < 1 ) {
+      // clear selected item when othing matches
+      _selectedItem = undefined
+    }
+
     stdout.write( clc.move.up( 2 + _printedMatches ) )
     stdout.write( clc.move.right( 1 + buffer.length + 1 ) )
   }
