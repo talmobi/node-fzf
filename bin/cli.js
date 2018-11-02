@@ -20,7 +20,7 @@ function run ()
 
       nfzf( files, function ( result ) {
         if ( result.selected ) {
-          console.log( files[ result.selected.originalIndex ] )
+          console.log( files[ result.selected.index ] )
         } else if ( argv[ 'print-query' ] ) {
           console.log()
           console.log( result.query )

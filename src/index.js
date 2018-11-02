@@ -152,25 +152,25 @@ function start ( list, callback )
           // match object format
           // results.push( {
           //   originalIndex: originalIndex,
-          //   index: results.length,
+          //   matchedIndex: results.length,
           //   original: item,
           //   text: t // what shows up on terminal/screen
           // } )
 
           return {
             value: match.original,
-            index: match.index,
-            originalIndex: match.originalIndex,
-            toString: function () {
-              return match.original
-            }
+            index: match.originalIndex,
+            // matchedIndex: match.matchedIndex,
+            // toString: function () {
+            //   return match.original
+            // }
           }
         }
 
         const result = {
           selected: _selectedItem && transformResult( _selectedItem ) || undefined,
-          matches: _matches.map( transformResult ),
-          list: _list.slice(),
+          // matches: _matches.map( transformResult ),
+          // list: _list.slice(),
           query: buffer
         }
 
@@ -304,7 +304,7 @@ function start ( list, callback )
 
         results.push( {
           originalIndex: originalIndex,
-          index: results.length,
+          matchedIndex: results.length,
           original: item,
           text: t // what shows up on terminal/screen
         } )
