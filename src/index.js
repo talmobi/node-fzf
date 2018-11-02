@@ -99,7 +99,12 @@ function start ( _list, callback )
           break
 
         case 'w': // clear fuzzy word
-          buffer = ''
+          var m = buffer.match( /\s\S+\s*$/ ) // match last whitespace
+          if ( m && m.index ) {
+            buffer = buffer.slice( 0, m.index + 1 )
+          } else {
+            buffer = ''
+          }
           render()
           break
 
