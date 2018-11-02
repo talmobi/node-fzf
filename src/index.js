@@ -282,6 +282,7 @@ function start ( list, callback )
 
         results.push( {
           originalIndex: originalIndex,
+          index: results.length,
           original: item,
           text: t // what shows up on terminal/screen
         } )
