@@ -28,10 +28,16 @@ const list = [ 'whale', 'giraffe', 'monkey' ]
 // opens interactive selection CLI
 // note! this messes with stdout so if you are
 // writing to stdout at the same time it will look a bit messy..
-const api = nfzf( list, function ( value, index ) {
-  console.log( value ) // 'giraffe'
-  console.log( index ) // 1
-  console.log( value === list[ index ] ) // true
+const api = nfzf( list, function ( result ) {
+  const { selected, query } = result;
+  if(!selected) {
+    console.log('No matches for:', query);
+  } else {
+    console.log( selected.original ) // 'giraffe'
+    console.log( selected.originalIndex ) // 1
+    console.log( selected.original === list[ selected.originalIndex ] ) // true
+  }
+
 } )
 
 // can also add more items later..
