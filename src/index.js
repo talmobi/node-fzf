@@ -148,11 +148,22 @@ function start ( list, callback )
         cleanDirtyScreen()
         stop()
 
-        if ( callback ) {
-          if ( selectedItem && matches.indexOf(selectedItem) > -1 ) {
-            callback( { selected: selectedItem } )
-          } else {
-            callback( { query: buffer } )
+        function transformResult ( match ) {
+          // match object format
+          // results.push( {
+          //   originalIndex: originalIndex,
+          //   index: results.length,
+          //   original: item,
+          //   text: t // what shows up on terminal/screen
+          // } )
+
+          return {
+            value: match.original,
+            index: match.index,
+            originalIndex: match.originalIndex,
+            toString: function () {
+              return match.original
+            }
           }
         }
 
