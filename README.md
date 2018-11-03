@@ -1,4 +1,5 @@
 [![npm](https://img.shields.io/npm/v/node-fzf.svg?maxAge=3600&style=flat-square)](https://www.npmjs.com/package/node-fzf)
+[![npm](https://img.shields.io/npm/dm/node-fzf.svg?maxAge=3600)](https://www.npmjs.com/package/node-fzf)
 [![npm](https://img.shields.io/npm/l/node-fzf.svg?maxAge=3600&style=flat-square)](https://github.com/talmobi/node-fzf/blob/master/LICENSE)
 
 #  node-fzf
