@@ -78,10 +78,12 @@ function start ( list, callback )
           // ignore
           break
         case 'j': // down
+        case 'n': // down
           selectionOffset += 1
           return render()
           break
         case 'k': // up
+        case 'p': // up
           selectionOffset -= 1
           return render()
           break

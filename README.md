@@ -50,8 +50,8 @@ setInterval( function () {
 
 #### Keyboard
 ```bash
-<ctrl-j>,down                 scroll down
-<ctrl-k>,up                   scroll up
+<ctrl-j>,<ctrl-n>,down        scroll down
+<ctrl-k>,<ctrl-p>,up          scroll up
 
 <ctrl-d>                      scroll down by 10
 <ctrl-u>                      scroll up by 10
