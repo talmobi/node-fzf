@@ -122,8 +122,16 @@ function start ( list, callback )
 
           case 'f': // jump forward 1 word
             {
-              // TODO
+              const slice = buffer.slice( cursorPosition )
+              const m = slice.match( /^\S+\s*/ ) // first word
+              if ( m && m.index >= 0 && m[ 0 ] && m[ 0 ].length >= 0 ) {
+                // console.log( m.index )
+                cursorPosition += ( m.index + m[ 0 ].length )
+              } else {
+                cursorPosition = buffer.length
+              }
             }
+            return render()
             break
 
           case 'd': // down
