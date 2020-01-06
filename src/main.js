@@ -94,7 +94,7 @@ function start ( list, callback )
           case 'b': // jump back 1 word
             {
               const slice = buffer.slice( 0, cursorPosition )
-              const m = slice.match( /\S+\s*$/ ) // match last whitespace
+              const m = slice.match( /\S+\s*$/ ) // last word
               if ( m && m.index > 0 ) {
                 // console.log( m.index )
                 cursorPosition = m.index
@@ -152,7 +152,7 @@ function start ( list, callback )
             {
               const a = buffer.slice( 0, cursorPosition )
               const b = buffer.slice( cursorPosition )
-              const m = a.match( /\S+\s*$/ ) // match last whitespace
+              const m = a.match( /\S+\s*$/ ) // last word
               if ( m && m.index > 0 ) {
                 // console.log( m.index )
                 cursorPosition = m.index
