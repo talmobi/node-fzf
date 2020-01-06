@@ -280,10 +280,21 @@ function start ( list, callback )
           startIndex = 3
         }
 
+        /* Cut off from the end of the (visual) line until
+         * it fits on the terminal width screen.
+         */
         len = stringWidth( t )
         if ( len > maxLen ) {
-          t = t.slice( 0, maxLen ) + '...'
-          endIndex = maxLen
+          let attempts = 0
+          while ( len > maxLen ) {
+            t = t.slice( 0, maxLen - attempts++ )
+
+            // re-calculate terminal/visual width
+            len = stringWidth( t )
+          }
+          t += '...'
+
+          endIndex = len
         }
 
         // colorise fuzzy matched characters
