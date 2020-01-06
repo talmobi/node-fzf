@@ -449,7 +449,18 @@ function start ( list, callback )
       cleanDirtyScreen()
 
       // calculate matches
-      _matches = fuzzyList( buffer, _list )
+      _matches = [] // reset matches
+      const split = buffer.split( /\s+/ )
+      for ( let i = 0; i < split.length; i++ ) {
+        const fuzz = split[ i ]
+        const list = ( i === 0 ) ?
+          _list :
+          _matches.map( function ( r ) {
+            return r.original
+          } )
+        const matches = fuzzyList( fuzz, list )
+        _matches = matches
+      }
       let offset = selectionOffset
 
       if ( offset >= _matches.length ) {
