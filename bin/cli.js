@@ -6,7 +6,7 @@ const fs = require( 'fs' )
 const path = require( 'path' )
 const glob = require( 'redstar' )
 
-const nfzf = require( path.join( __dirname, '../src/index.js' ) )
+const nfzf = require( path.join( __dirname, '../src/main.js' ) )
 
 const argv = require( 'minimist' )( process.argv.slice( 2 ) )
 
