@@ -380,78 +380,94 @@ function start ( list, callback )
       return results
     }
 
-          // shift left until the last matched fuzzy character is visible
-          const lastMatchIndex = matches[ matches.length - 1 ]
-          const marginRight = Math.ceil( clc.windowSize.width * 0.4 )
+    function colorFuzzMatch ( fuzz, match, clcColor ) {
+      const paintBucket = [] // characters to colorize at the end
 
-          let matchMarginRight = ( lastMatchIndex + marginRight )
-          // limit too much unnecessary empty margin
-          if ( matchMarginRight > ( len + 8 ) ) matchMarginRight = ( len + 8 )
+      const matches = fuzzyMatches( fuzz, match )
+      /* we don't have to check if the fuzz matches precisely as
+       * we only want to colorize the match string -- if we care about
+       * a correct fuzz match we would have tested that before colorizing
+       * the match here.
+       */
 
-          const shiftRight = ( maxLen - matchMarginRight )
-          let shiftAmount = 0
-          let startIndex = 0
-          let endIndex = len
-
-          if ( shiftRight < 0 ) {
-            // we need to shift so that the matched text and margin is in view
-            shiftAmount = -shiftRight
-            t = '...' + t.slice( shiftAmount )
-
-            startIndex = 3
-          }
-
-          /* Cut off from the end of the (visual) line until
-           * it fits on the terminal width screen.
-           */
-          len = stringWidth( t )
-          if ( len > maxLen ) {
-            let attempts = 0
-            while ( len > maxLen ) {
-              t = t.slice( 0, maxLen - attempts++ )
-
-              // re-calculate terminal/visual width
-              len = stringWidth( t )
-            }
-            t += '...'
-
-            endIndex = len
-          }
-
-          // colorise fuzzy matched characters
-          // in reverse because invisible ANSI color characters increases
-          // string length
-          paintBucket.sort( function ( a, b ) {
-            return b.index - a.index
-          } )
-          for ( let i = 0; i < paintBucket.length; i++ ) {
-            const paint = paintBucket[ i ]
-            const index = paint.index - shiftAmount + startIndex
-
-            // skip fuzzy chars that have shifted out of view
-            if ( index < startIndex ) continue
-            if ( index > endIndex ) continue
-
-            const c = paint.clc( t[ index ] )
-            t = t.slice( 0, index ) + c + t.slice( index + 1 )
-          }
-
-          results.push( {
-            originalIndex: originalIndex,
-            matchedIndex: results.length,
-            original: item,
-            text: t // what shows up on terminal/screen
-          } )
-        }
+      for ( let i = 0; i < matches.length; i++ ) {
+        const index = matches[ i ]
+        paintBucket.push( { index: index, clc: clcFgMatchGreen || clcColor } )
       }
 
-      // sorts in-place
-      // results.sort( function ( a, b ) {
-      //   if ( a.original < b.original ) return -1
-      //   return 1
-      // } )
+      // copy match text colorize it based on the matches
+      // this variable with the colorized ANSI text will be
+      // returned at the end of the function
+      let t = match
 
-      return results
+      let len = stringWidth( t ) // use string-width to keep length in check
+      const maxLen = getMaxWidth() // terminal width
+
+      /* we want to show the user the last characters that matches
+       * as those are the most relevant
+       * ( and ignore earlier matches if they go off-screen )
+       *
+       * use the marginRight to shift the matched text left until
+       * the last characters that match are visible on the screen
+       */
+      const lastMatchIndex = matches[ matches.length - 1 ]
+      const marginRight = Math.ceil( clc.windowSize.width * 0.4 )
+
+      let matchMarginRight = ( lastMatchIndex + marginRight )
+
+      // but don't shift too much
+      if ( matchMarginRight > ( len + 8 ) ) matchMarginRight = ( len + 8 )
+
+      const shiftRight = ( maxLen - matchMarginRight )
+      let shiftAmount = 0
+      let startIndex = 0
+      let endIndex = len
+
+      if ( shiftRight < 0 ) {
+        // we need to shift so that the matched text and margin is in view
+        shiftAmount = -shiftRight
+        t = '...' + t.slice( shiftAmount )
+
+        startIndex = 3
+      }
+
+      /* Cut off from the end of the (visual) line until
+       * it fits on the terminal width screen.
+       */
+      len = stringWidth( t )
+      if ( len > maxLen ) {
+        let attempts = 0
+        while ( len > maxLen ) {
+          t = t.slice( 0, maxLen - attempts++ )
+
+          // re-calculate terminal/visual width
+          len = stringWidth( t )
+        }
+        t += '...'
+
+        endIndex = len
+      }
+
+      // colorise in reverse because invisible ANSI color
+      // characters increases string length
+      paintBucket.sort( function ( a, b ) {
+        return b.index - a.index
+      } )
+
+      for ( let i = 0; i < paintBucket.length; i++ ) {
+        const paint = paintBucket[ i ]
+        const index = paint.index - shiftAmount + startIndex
+
+        // skip fuzzy chars that have shifted out of view
+        if ( index < startIndex ) continue
+        if ( index > endIndex ) continue
+
+        const c = paint.clc( t[ index ] )
+        t = t.slice( 0, index ) + c + t.slice( index + 1 )
+      }
+
+      // return the colorized match text
+      return t
     }
 
     function cleanDirtyScreen ()
