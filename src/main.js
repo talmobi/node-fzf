@@ -305,6 +305,7 @@ function start ( list, callback )
 
     function fuzzyMatch ( fuzz, text )
     {
+      // TODO this fn not used anymore?
       const matches = fuzzyMatches( fuzz, text )
       return matches.length === fuzz.length
     }
