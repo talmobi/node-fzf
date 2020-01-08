@@ -499,7 +499,7 @@ function start ( list, callback )
         const fuzz = split[ i ]
         let list = _list // fuzzy match against all items in list
         if ( i > 0 ) {
-          // if we already have matches, fuzzy match against on those
+          // if we already have matches, fuzzy match against those
           list = _matches.map( function ( r ) { return r.original } )
         }
         const matches = fuzzyList( fuzz, list )
