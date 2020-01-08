@@ -341,11 +341,25 @@ function start ( list, callback )
       for ( let i = 0; i < list.length; i++ ) {
         const originalIndex = i
         const item = list[ i ]
+
+        // get rid of unnecessary whitespace that only takes of
+        // valuable scren space
         const normalizedItem = item.split( /\s+/ ).join( ' ' )
+
+        /* matches is an array of indexes on the normalizedItem string
+         * that have matched the fuzz
+         */
         const matches = fuzzyMatches( fuzz, normalizedItem )
 
         if ( matches.length === fuzz.length ) {
-          // matches
+          /* When the matches.length is exacly the same as fuzz.length
+           * it means we have a fuzzy match -> all characters in
+           * the fuzz string have been found on the normalizedItem string.
+           * The matches array holds each string index position
+           * of those matches on the normalizedItem string.
+           * ex. fuzz = 'foo', normalizedItem = 'far out dog', matches = [0,4,9]
+           */
+
           let t = normalizedItem
 
           const paintBucket = [] // characters to colorize at the end
