@@ -516,6 +516,27 @@ function start ( list, callback )
       stdout.write( buffer )
       stdout.write( '\n' )
 
+      // colorize matched text
+      for ( let i = 0; i < _matches.length; i++ ) {
+        const match = _matches[ i ]
+
+        const split = buffer.split( /\s+/ )
+        let indexMap = {} // as map to prevent duplicates indexes
+        for ( let i = 0; i < split.length; i++ ) {
+          const fuzz = split[ i ]
+          const matches = fuzzyMatches( fuzz, match.text )
+          matches.forEach( function ( i ) {
+            indexMap[ i ] = true
+          } )
+        }
+
+        const indexes = Object.keys( indexMap )
+        indexes.sort() // sort indexes
+
+        // transform the text to a colorized version
+        match.text = colorIndexesOnText( indexes, match.text )
+      }
+
       // print matches
       const n = _matches.length
       stdout.write( '  ' )
