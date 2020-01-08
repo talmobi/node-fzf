@@ -543,7 +543,7 @@ function start ( list, callback )
       }
 
       if ( _printedMatches < 1 ) {
-        // clear selected item when othing matches
+        // clear selected item when nothing matches
         _selectedItem = undefined
       }
 
