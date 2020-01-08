@@ -374,25 +374,18 @@ function start ( list, callback )
       return results
     }
 
-    function colorFuzzMatch ( fuzz, match, clcColor ) {
+    function colorIndexesOnText ( indexes, text, clcColor ) {
       const paintBucket = [] // characters to colorize at the end
 
-      const matches = fuzzyMatches( fuzz, match )
-      /* we don't have to check if the fuzz matches precisely as
-       * we only want to colorize the match string -- if we care about
-       * a correct fuzz match we would have tested that before colorizing
-       * the match here.
-       */
-
-      for ( let i = 0; i < matches.length; i++ ) {
-        const index = matches[ i ]
+      for ( let i = 0; i < indexes.length; i++ ) {
+        const index = indexes[ i ]
         paintBucket.push( { index: index, clc: clcFgMatchGreen || clcColor } )
       }
 
       // copy match text colorize it based on the matches
       // this variable with the colorized ANSI text will be
       // returned at the end of the function
-      let t = match
+      let t = text
 
       let len = stringWidth( t ) // use string-width to keep length in check
       const maxLen = getMaxWidth() // terminal width
@@ -404,7 +397,7 @@ function start ( list, callback )
        * use the marginRight to shift the matched text left until
        * the last characters that match are visible on the screen
        */
-      const lastMatchIndex = matches[ matches.length - 1 ]
+      const lastMatchIndex = indexes[ indexes.length - 1 ]
       const marginRight = Math.ceil( clc.windowSize.width * 0.4 )
 
       let matchMarginRight = ( lastMatchIndex + marginRight )
