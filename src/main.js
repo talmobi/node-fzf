@@ -371,12 +371,6 @@ function start ( list, callback )
         }
       }
 
-      // sorts in-place
-      // results.sort( function ( a, b ) {
-      //   if ( a.original < b.original ) return -1
-      //   return 1
-      // } )
-
       return results
     }
 
