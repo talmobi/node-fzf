@@ -362,15 +362,23 @@ function start ( list, callback )
 
           let t = normalizedItem
 
-          const paintBucket = [] // characters to colorize at the end
+          results.push( {
+            originalIndex: originalIndex,
+            matchedIndex: results.length,
+            original: item,
+            text: t // what shows up on terminal/screen
+          } )
+        }
+      }
 
-          for ( let i = 0; i < matches.length; i++ ) {
-            const index = matches[ i ]
-            paintBucket.push( { index: index, clc: clcFgMatchGreen } )
-          }
+      // sorts in-place
+      // results.sort( function ( a, b ) {
+      //   if ( a.original < b.original ) return -1
+      //   return 1
+      // } )
 
-          let len = stringWidth( t ) // use string-width to keep length in check
-          const maxLen = getMaxWidth() // terminal width
+      return results
+    }
 
           // shift left until the last matched fuzzy character is visible
           const lastMatchIndex = matches[ matches.length - 1 ]
