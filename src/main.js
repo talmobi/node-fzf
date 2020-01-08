@@ -464,11 +464,11 @@ function start ( list, callback )
       const split = buffer.split( /\s+/ )
       for ( let i = 0; i < split.length; i++ ) {
         const fuzz = split[ i ]
-        const list = ( i === 0 ) ?
-          _list :
-          _matches.map( function ( r ) {
-            return r.original
-          } )
+        let list = _list // fuzzy match against all items in list
+        if ( i > 0 ) {
+          // if we already have matches, fuzzy match against on those
+          list = _matches.map( function ( r ) { return r.original } )
+        }
         const matches = fuzzyList( fuzz, list )
         _matches = matches
       }
