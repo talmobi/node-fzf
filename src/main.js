@@ -515,14 +515,23 @@ function start ( list, callback )
       stdout.write( buffer )
       stdout.write( '\n' )
 
-      // colorize matched text
+      /* Here we color the matched items text for terminal
+       * printing based on what characters were found/matched.
+       *
+       * Since each filter is separated by space we first
+       * combine all matches from all filters(words).
+       *
+       * If we want to only color based on the most recent
+       * filter (last word) then just use the matches from the
+       * last word.
+       */
       for ( let i = 0; i < _matches.length; i++ ) {
         const match = _matches[ i ]
 
-        const split = buffer.split( /\s+/ )
+        const words = buffer.split( /\s+/ )
         let indexMap = {} // as map to prevent duplicates indexes
-        for ( let i = 0; i < split.length; i++ ) {
-          const fuzz = split[ i ]
+        for ( let i = 0; i < words.length; i++ ) {
+          const fuzz = words[ i ]
           const matches = fuzzyMatches( fuzz, match.text )
           matches.forEach( function ( i ) {
             indexMap[ i ] = true
