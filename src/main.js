@@ -36,8 +36,9 @@ function start ( list, callback )
     // make `process.stdin` begin emitting "keypress" events
     keypress( stdin )
 
-    // index of selection relative to currently matched results
-    let selectionOffset = 0
+    // selected index relative to currently matched results
+    // (filtered subset of _list)
+    let selectedIndex = 0
 
     // input buffer
     let buffer = ''
@@ -107,12 +108,12 @@ function start ( list, callback )
 
           case 'j': // down
           case 'n': // down
-            selectionOffset += 1
+            selectedIndex += 1
             return render()
             break
           case 'k': // up
           case 'p': // up
-            selectionOffset -= 1
+            selectedIndex -= 1
             return render()
             break
 
@@ -136,13 +137,13 @@ function start ( list, callback )
 
           case 'd': // down
             // basically intended as page-down
-            selectionOffset += view_height
+            selectedIndex += view_height
             return render()
             break
 
           case 'u': // up
             // basically intended as page-up
-            selectionOffset -= view_height
+            selectedIndex -= view_height
             return render()
             break
 
@@ -216,12 +217,12 @@ function start ( list, callback )
         // ref: https://ss64.com/bash/syntax-keyboard.html
         case 'down': // ctrl-j
         case 'enter':
-          selectionOffset += 1
+          selectedIndex += 1
           return render()
           break
 
         case 'up':
-          selectionOffset -= 1
+          selectedIndex -= 1
           return render()
           break
 
@@ -500,7 +501,7 @@ function start ( list, callback )
       }
 
       // selection index (cursor position) relative to matched results
-      let offset = selectionOffset
+      let offset = selectedIndex
 
       // max out at end of filtered/matched results
       if ( offset >= _matches.length ) {
@@ -513,7 +514,7 @@ function start ( list, callback )
       }
 
       // save the normalized offset
-      selectionOffset = offset
+      selectedIndex = offset
 
       // print buffer arrow
       stdout.write( clcFgBufferArrow( '> ' ) )
