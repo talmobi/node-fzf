@@ -10,12 +10,19 @@ const clc = require( 'cli-color' )
 
 module.exports = start
 
-function start ( list, callback )
+function start ( opts, callback )
 {
+  if ( Array.isArray( opts ) ) {
+    opts = {
+      list: opts,
+      mode: 'fzf'
+    }
+  }
+
   const promise = new Promise( function ( resolve, reject ) {
     const _api = {}
 
-    let _list = list || []
+    let _list = opts.list || []
 
     let _input = ''
 
@@ -313,6 +320,28 @@ function start ( list, callback )
       return matches.length === fuzz.length
     }
 
+    // get matches based on the search mode
+    function getMatches ( mode, filter, text )
+    {
+      if ( mode === 'word' ) {
+        return wordMatches( filter, text )
+      }
+
+      // default to fuzzy matching
+      return fuzzyMatches( filter, text )
+    }
+
+    // get matched list based on the search mode
+    function getList ( mode, filter, list )
+    {
+      if ( mode === 'word' ) {
+        return wordList( filter, list )
+      }
+
+      // default to fuzzy matching
+      return fuzzyList( filter, list )
+    }
+
     function fuzzyMatches ( fuzz, text )
     {
       fuzz = fuzz.toLowerCase()
@@ -320,6 +349,9 @@ function start ( list, callback )
 
       let tp = 0 // text position/pointer
       let matches = []
+
+      // nothing to match with
+      if ( !fuzz ) return matches
 
       for ( let i = 0; i < fuzz.length; i++ ) {
         const f = fuzz[ i ]
@@ -361,6 +393,70 @@ function start ( list, callback )
            * The matches array holds each string index position
            * of those matches on the normalizedItem string.
            * ex. fuzz = 'foo', normalizedItem = 'far out dog', matches = [0,4,9]
+           */
+
+          let t = normalizedItem
+
+          results.push( {
+            originalIndex: originalIndex,
+            matchedIndex: results.length,
+            original: item,
+            text: t // what shows up on terminal/screen
+          } )
+        }
+      }
+
+      return results
+    }
+
+    function wordMatches ( filter, text )
+    {
+      filter = filter.toLowerCase() // ex. foo
+      text = text.toLowerCase() // ex. dog food is geat
+
+      let tp = 0 // text position/pointer
+      let matches = []
+
+      // nothing to match with
+      if ( !filter ) return matches
+
+      // source pointer ( first index of matched text )
+      const sp = text.indexOf( filter )
+      if ( sp >= 0 ) {
+        // end pointer ( last index of matched text )
+        const ep = sp + filter.length
+        for ( let i = sp; i <= ep; i++ ) {
+          matches.push( i )
+        }
+      }
+
+      return matches
+    }
+
+    function wordList ( filter, list )
+    {
+      const results = []
+
+      for ( let i = 0; i < list.length; i++ ) {
+        const originalIndex = i
+        const item = list[ i ]
+
+        // get rid of unnecessary whitespace that only takes of
+        // valuable scren space
+        const normalizedItem = item.split( /\s+/ ).join( ' ' )
+
+        /* matches is an array of indexes on the normalizedItem string
+         * that have matched the fuzz
+         */
+        const matches = wordMatches( filter, normalizedItem )
+
+        if ( matches.length === filter.length ) {
+          /* When the matches.length is exacly the same as filter.length
+           * it means we have a fuzzy match -> all characters in
+           * the filter string have been found on the normalizedItem string.
+           * The matches array holds each string index position
+           * of those matches on the normalizedItem string.
+           * ex. filter = 'foo', normalizedItem = 'dog food yum', matches = [4,5,6]
            */
 
           let t = normalizedItem
@@ -490,15 +586,15 @@ function start ( list, callback )
 
       // calculate matches
       _matches = [] // reset matches
-      const split = buffer.split( /\s+/ )
-      for ( let i = 0; i < split.length; i++ ) {
-        const fuzz = split[ i ]
+      const words = buffer.split( /\s+/ )
+      for ( let i = 0; i < words.length; i++ ) {
+        const word = words[ i ]
         let list = _list // fuzzy match against all items in list
         if ( i > 0 ) {
           // if we already have matches, fuzzy match against those
           list = _matches.map( function ( r ) { return r.original } )
         }
-        const matches = fuzzyList( fuzz, list )
+        const matches = getList( opts.mode, word, list )
         _matches = matches
       }
 
@@ -533,8 +629,8 @@ function start ( list, callback )
         const words = buffer.split( /\s+/ )
         let indexMap = {} // as map to prevent duplicates indexes
         for ( let i = 0; i < words.length; i++ ) {
-          const fuzz = words[ i ]
-          const matches = fuzzyMatches( fuzz, match.text )
+          const word = words[ i ]
+          const matches = getMatches( opts.mode, word, match.text )
           matches.forEach( function ( i ) {
             indexMap[ i ] = true
           } )
