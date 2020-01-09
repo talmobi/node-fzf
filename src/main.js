@@ -559,7 +559,8 @@ function start ( list, callback )
 
       _printedMatches = 0
 
-      const maxPrintLength = Math.min( _matches.length, MIN_HEIGHT )
+      // max lines to use for printing matched results
+      const maxPrintedLines = Math.min( _matches.length, MIN_HEIGHT )
 
       let paddingBottom = 2 // 1 extra padding at the bottom when scrolling down
       if ( _matches.length <= MIN_HEIGHT ) {
@@ -568,12 +569,14 @@ function start ( list, callback )
         paddingBottom = 1
       }
 
-      const startIndex = Math.max( 0, selectedIndex - maxPrintLength + paddingBottom )
+      // first matched result to print
+      const startIndex = Math.max( 0, selectedIndex - maxPrintedLines + paddingBottom )
 
-      const matchLimit = Math.min( maxPrintLength + startIndex, _matches.length )
+      // last matched result to print
+      const endIndex = Math.min( maxPrintedLines + startIndex, _matches.length )
 
       // print matches
-      for ( let i = startIndex; i < matchLimit; i++ ) {
+      for ( let i = startIndex; i < endIndex; i++ ) {
         _printedMatches++
 
         const match = _matches[ i ]
