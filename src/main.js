@@ -629,6 +629,7 @@ function start ( list, callback )
   return promise
 }
 
+// quick debugging, only executes when run with `node main.js`
 if ( require.main === module ) {
   ;( async function () {
     const r = await start( require( '../animals.json' ) )
