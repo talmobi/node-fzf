@@ -498,12 +498,16 @@ function start ( list, callback )
         const matches = fuzzyList( fuzz, list )
         _matches = matches
       }
+
+      // selection index (cursor position) relative to matched results
       let offset = selectionOffset
 
+      // max out at end of filtered/matched results
       if ( offset >= _matches.length ) {
         offset = _matches.length - 1
       }
 
+      // min out at beginning of filtered/matched results
       if ( offset < 0 ) {
         offset = 0
       }
