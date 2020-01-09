@@ -542,7 +542,7 @@ function start ( list, callback )
         indexes.sort() // sort indexes
 
         // transform the text to a colorized version
-        match.text = colorIndexesOnText( indexes, match.text )
+        match.text = colorIndexesOnText( indexes, match.text /*, clcFgGreen */ )
       }
 
       // print matches
