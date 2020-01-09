@@ -267,6 +267,8 @@ function start ( list, callback )
             callback( result )
           }
 
+          resolve( result )
+
           return
           break
       }
@@ -624,6 +626,7 @@ function start ( list, callback )
 
     return _api
   } )
+  return promise
 }
 
 const animals = [
