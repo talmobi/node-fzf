@@ -323,23 +323,38 @@ function start ( opts, callback )
     // get matches based on the search mode
     function getMatches ( mode, filter, text )
     {
-      if ( mode === 'word' ) {
-        return wordMatches( filter, text )
-      }
+      switch ( mode.trim().toLowerCase() ) {
+        case 'word':
+        case 'words':
+        case 'text':
+        case 'normal':
+          return wordMatches( filter, text )
 
-      // default to fuzzy matching
-      return fuzzyMatches( filter, text )
+        case 'fzf':
+        case 'fuzzy':
+        default:
+          // default to fuzzy matching
+          return fuzzyMatches( filter, text )
+      }
     }
 
     // get matched list based on the search mode
     function getList ( mode, filter, list )
     {
-      if ( mode === 'word' ) {
-        return wordList( filter, list )
-      }
-
       // default to fuzzy matching
-      return fuzzyList( filter, list )
+      switch ( mode.trim().toLowerCase() ) {
+        case 'word':
+        case 'words':
+        case 'text':
+        case 'normal':
+          return wordList( filter, list )
+
+        case 'fzf':
+        case 'fuzzy':
+        default:
+          // default to fuzzy matching
+          return fuzzyList( filter, list )
+      }
     }
 
     function fuzzyMatches ( fuzz, text )
