@@ -692,6 +692,13 @@ const animals = [
   'Zebras'
 ]
 
-start( animals, function ( r ) {
-  console.log( r.selected )
-} )
+if ( require.main === module ) {
+  // start( animals, function ( r ) {
+  //   console.log( r.selected )
+  // } )
+
+  ;( async function () {
+    const r = await start( animals )
+    console.log( r.selected )
+  } )()
+}
