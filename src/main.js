@@ -500,21 +500,15 @@ function start ( list, callback )
         _matches = matches
       }
 
-      // selection index (cursor position) relative to matched results
-      let offset = selectedIndex
-
-      // max out at end of filtered/matched results
-      if ( offset >= _matches.length ) {
-        offset = _matches.length - 1
+      if ( selectedIndex >= _matches.length ) {
+        // max out at end of filtered/matched results
+        selectedIndex = _matches.length - 1
       }
 
-      // min out at beginning of filtered/matched results
-      if ( offset < 0 ) {
-        offset = 0
+      if ( selectedIndex < 0 ) {
+        // min out at beginning of filtered/matched results
+        selectedIndex = 0
       }
-
-      // save the normalized offset
-      selectedIndex = offset
 
       // print buffer arrow
       stdout.write( clcFgBufferArrow( '> ' ) )
@@ -565,7 +559,7 @@ function start ( list, callback )
         paddingBottom = 1
       }
 
-      const startIndex = Math.max( 0, offset - maxPrintLength + paddingBottom )
+      const startIndex = Math.max( 0, selectedIndex - maxPrintLength + paddingBottom )
 
       const matchLimit = Math.min( maxPrintLength + startIndex, _matches.length )
 
@@ -578,7 +572,7 @@ function start ( list, callback )
         const item = match.text
 
         const itemSelected = (
-          ( offset === i )
+          ( selectedIndex === i )
         )
 
         if ( itemSelected ) {
