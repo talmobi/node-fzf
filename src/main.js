@@ -629,76 +629,9 @@ function start ( list, callback )
   return promise
 }
 
-const animals = [
-  'Apes',
-  'Badgers',
-  'Bats',
-  'Bears',
-  'Bees',
-  'Buffalo',
-  'Camels',
-  'Cats',
-  'Cobras',
-  'Crocodiles',
-  'Crows',
-  'Dogs',
-  'Donkeys',
-  'Eagles',
-  'Elephants',
-  'Elk',
-  'Falcons',
-  'Ferrets',
-  'Fish',
-  'Flamingos',
-  'Fox',
-  'Frogs',
-  'Geese',
-  'Giraffes',
-  'Gorillas',
-  'Hippopotami',
-  'Hyenas',
-  'Jaguars',
-  'Jellyfish',
-  'Kangaroos',
-  'Lemurs',
-  'Leopards',
-  'Lions',
-  'Moles',
-  'Monkeys',
-  'Mules',
-  'Otters',
-  'Oxen',
-  'Owls',
-  'Parrots',
-  'Pigs',
-  'Porcupines',
-  'Rabbits',
-  'Rats',
-  'Ravens',
-  'Rhinoceroses',
-  'Shark',
-  'Skunk',
-  'Snakes',
-  'Squirrels',
-  'Stingrays',
-  'Swans',
-  'Tigers',
-  'Toads',
-  'Turkeys',
-  'Turtles',
-  'Weasels',
-  'Whales',
-  'Wolves',
-  'Zebras'
-]
-
 if ( require.main === module ) {
-  // start( animals, function ( r ) {
-  //   console.log( r.selected )
-  // } )
-
   ;( async function () {
-    const r = await start( animals )
+    const r = await start( require( '../animals.json' ) )
     console.log( r.selected )
   } )()
 }
