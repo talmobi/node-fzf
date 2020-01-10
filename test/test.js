@@ -350,3 +350,27 @@ test( 'test backspace ( ctrl-h )', async function ( t ) {
 
   t.equal( r.selected.index, 1, 'Retro Grooves Mix index' )
 } )
+
+test( 'test jump to end ( ctrl-e )', async function ( t ) {
+  t.plan( 1 )
+
+  // prepare mocked user input for nfzf
+  process.nextTick( function () {
+    // ctrl-a ( \x01 ) ( beginning )
+    // ctrl-b ( \x02 ) ( back a word )
+    // ctrl-e ( \x05 ) ( end )
+    // ctrl-f ( \x06 ) ( forward a word )
+    // ctrl-w ( \x17 ) ( delete a word )
+    stdin.send( 'iza iza iza xxxxx\x01\x05\x17\r' )
+  } )
+
+  const opts = {
+    mode: 'normal',
+    list: require( '../test/youtube-search-results.json' )
+  }
+
+  const r = await nfzf( opts )
+  log( r )
+
+  t.equal( r.selected.index, 34, 'Izabelle' )
+} )
