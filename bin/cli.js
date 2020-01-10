@@ -10,6 +10,8 @@ const nfzf = require( path.join( __dirname, '../src/main.js' ) )
 
 const argv = require( 'minimist' )( process.argv.slice( 2 ) )
 
+const normalMode = ( argv.n || argv.normal || argv.norm )
+
 return run()
 
 function run ()
@@ -18,7 +20,12 @@ function run ()
     return glob( '**', function ( err, files, dirs ) {
       if ( err ) throw err
 
-      nfzf( files, function ( result ) {
+      const opts = {
+        mode: normalMode ? 'normal' : 'fzf',
+        list: files
+      }
+
+      nfzf( opts, function ( result ) {
         if ( result.selected ) {
           console.log( files[ result.selected.index ] )
         } else if ( argv[ 'print-query' ] ) {
@@ -29,9 +36,13 @@ function run ()
       } )
     } )
   } else {
-    // stream piped input to the list
+    // update list later with input piped from stdin
+    const opts = {
+      mode: normalMode ? 'normal' : 'fzf',
+      list: [] // stdin will update it later
+    }
 
-    const api = nfzf( [], function ( result ) {
+    const api = nfzf( opts, function ( result ) {
       if ( result.selected ) {
         console.log( result.selected.value )
       } else if ( argv[ 'print-query' ] ) {
