@@ -46,6 +46,10 @@ setInterval( function () {
   list.push( 'foobar' )
   api.update( list )
 }, 1000 )
+
+// if you don't need the api returned by nfzf you can use
+// promises to await for the result only
+const result = await nfzf( list )
 ```
 
 #### Keyboard
