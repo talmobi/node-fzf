@@ -284,3 +284,69 @@ test( 'test normal mode multi fiter combination', async function ( t ) {
   t.equal( r.selected.value, '    513166 | Interstellar (Chillwave - Retrowave - Electronic Mix) (51:36) | SoulSearchAndDestroy', 'Interstellar' )
   t.equal( r.selected.index, 4, 'Interstellar index' )
 } )
+
+test( 'test ctrl-b, ctr-w ( jump back word ) ( delete word )', async function ( t ) {
+  t.plan( 2 )
+
+  // prepare mocked user input for nfzf
+  process.nextTick( function () {
+    // ctrl-b ( \x02 ) ( back a word )
+    // ctrl-w ( \x17 ) ( delete a word )
+    stdin.send( 'hjklhjkl music retro\x02\x02\x17\r' )
+  } )
+
+  const opts = {
+    mode: 'normal',
+    list: require( '../test/youtube-search-results.json' )
+  }
+
+  const r = await nfzf( opts )
+  log( r )
+
+  t.equal( r.selected.value, '    253379 | Paradise Magic Music - \'Back To The 80\'s\' Best of Synthwave And Retro Electro Music (2:01:30) | Paradise Magic Music', 'Paradise Magic Music' )
+  t.equal( r.selected.index, 3, 'Paradise Magic Music index' )
+} )
+
+test( 'test 日本語, jump forward ( ctrl-f ), jump beginning ( ctrl-a )', async function ( t ) {
+  t.plan( 2 )
+
+  // prepare mocked user input for nfzf
+  process.nextTick( function () {
+    // ctrl-a ( \x01 ) ( beginning )
+    // ctrl-b ( \x02 ) ( back a word )
+    // ctrl-f ( \x06 ) ( forward a word )
+    // ctrl-w ( \x17 ) ( delete a word )
+    stdin.send( '世界　hjklhjkl fan\x01\x06\x06\x17\r' )
+  } )
+
+  const opts = {
+    mode: 'normal',
+    list: require( '../test/youtube-search-results.json' )
+  }
+
+  const r = await nfzf( opts )
+  log( r )
+
+  t.equal( r.selected.value, '   2587609 | 【癒し効果】天国や異世界で流れる、魔法の音楽【作業用BGM】~ Fantasy Music ~ (43:58) | xxxJunaJunaxxx', 'Fantasy Music' )
+  t.equal( r.selected.index, 19, 'Fantasy Music index' )
+} )
+
+test( 'test backspace ( ctrl-h )', async function ( t ) {
+  t.plan( 1 )
+
+  // prepare mocked user input for nfzf
+  process.nextTick( function () {
+    // ctrl-h ( \x08 ) ( backspace )
+    stdin.send( 'syntw\x08\r' )
+  } )
+
+  const opts = {
+    mode: 'normal',
+    list: require( '../test/youtube-search-results.json' )
+  }
+
+  const r = await nfzf( opts )
+  log( r )
+
+  t.equal( r.selected.index, 1, 'Retro Grooves Mix index' )
+} )
