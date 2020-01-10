@@ -14,6 +14,12 @@ module.exports = start
 
 function start ( opts, callback )
 {
+  /* opts has to remain the same object at all times
+   * as it will be returned as an api as well that the
+   * user can use.
+   */
+
+
   if ( Array.isArray( opts ) ) {
     opts.list = opts
     opts.mode = 'fuzzy'
@@ -26,7 +32,7 @@ function start ( opts, callback )
   opts.list = opts.list || []
   opts.mode = opts.mode || 'fuzzy'
 
-  let _api = {}
+  const _api = opts
 
   const promise = new Promise( function ( resolve, reject ) {
     let originalList = opts.list || []
@@ -688,6 +694,7 @@ function start ( opts, callback )
         _selectedItem = _matches[ 0 ]
       }
 
+      // print the matches
       _printedMatches = 0
 
       // max lines to use for printing matched results
