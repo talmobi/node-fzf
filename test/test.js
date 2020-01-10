@@ -192,7 +192,7 @@ test( 'multiple fuzz selection', async function ( t ) {
   console.log( r )
 
   t.equal( r.selected.value, 'Lemurs', 'Lemurs value' )
-  t.equal( r.selected.index, 5, 'Lemurs index' )
+  t.equal( r.selected.index, 30, 'Lemurs index' )
 } )
 
 test( 'select nothing in the list (undefined)', async function ( t ) {
