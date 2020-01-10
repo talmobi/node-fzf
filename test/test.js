@@ -264,7 +264,7 @@ test( 'test normal mode', async function ( t ) {
   t.equal( r.selected.index, 9, 'Super Nintendo index' )
 } )
 
-test( 'test normal mode 2 fiter combination', async function ( t ) {
+test( 'test normal mode multi fiter combination', async function ( t ) {
   t.plan( 2 )
 
   // prepare mocked user input for nfzf
