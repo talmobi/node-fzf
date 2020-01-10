@@ -57,16 +57,22 @@ const result = await nfzf( list )
 <ctrl-j>,<ctrl-n>,down        scroll down
 <ctrl-k>,<ctrl-p>,up          scroll up
 
-<ctrl-d>                      scroll down by 10
-<ctrl-u>                      scroll up by 10
+<ctrl-d>                      scroll down by page size
+<ctrl-u>                      scroll up by page size
+
+<ctrl-a>                      jump to start of input
+<ctrl-e>                      jump to end of input
 
 <esc>,<ctrl-q>,<ctrl-c>       cancel
 
-<return>,<ctrl-m>             trigger callback with current selection and exit
+<return>,<ctrl-m>             trigger callback/promise with current selection and exit
 
-<ctrl-w>                      clear last word (whitespace delimited) from fuzzy search
+<ctrl-w>                      delte last word from input
 
-<backspace>                   delete last fuzzy search character
+<ctrl-b>                      jump back a word
+<ctrl-f>                      jump forward a word
+
+<backspace>                   delete last input character
 ```
 
 ## About
