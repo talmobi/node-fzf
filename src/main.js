@@ -153,6 +153,16 @@ function start ( opts, callback )
             // ignore
             break
 
+          case 's':
+            // TODO ctrl-s support? switch between match modes?
+            {
+              // cleanDirtyScreen()
+              let i = modes.indexOf( opts.mode )
+              opts.mode = modes[ ++i % modes.length ]
+            }
+            return render()
+            break
+
           case 'f': // jump forward 1 word
             {
               const slice = buffer.slice( cursorPosition )
@@ -336,6 +346,7 @@ function start ( opts, callback )
     const clcFgBufferArrow = clc.xterm( 110 )
     const clcFgGreen = clc.xterm( 143 )
     // const clcFgMatchGreen = clc.xterm( 151 )
+    const clcFgModeStatus = clc.xterm( 110 )
     const clcFgMatchGreen = clc.xterm( 107 )
 
     function fuzzyMatch ( fuzz, text )
@@ -682,10 +693,14 @@ function start ( opts, callback )
         match.text = colorIndexesOnText( indexes, match.text /*, clcFgGreen */ )
       }
 
-      // print matches
+      // print matches length vs original list length
       const n = _matches.length
       stdout.write( '  ' )
       stdout.write( clcFgGreen( n + '/' + _list.length ) )
+
+      // TODO print mode
+      stdout.write( ' ' + clcFgModeStatus( opts.mode  + ' mode' ) )
+
       stdout.write( '\n' )
 
       // select first item in list by default ( empty fuzzy search matches first
