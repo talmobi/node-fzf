@@ -243,3 +243,44 @@ test( 'test original index correct', async function ( t ) {
   t.equal( r.selected.value, '    936460 | ~ N I G H T D R I V E ~ A Synthwave Music Video Mix [Chillwave - Retrowave] (45:31) | Euphoric Eugene', '~ N I G H T D R I V E ~' )
   t.equal( r.selected.index, 6, '~ N I G H T D R I V E ~ index' )
 } )
+
+test( 'test normal mode', async function ( t ) {
+  t.plan( 2 )
+
+  // prepare mocked user input for nfzf
+  process.nextTick( function () {
+    stdin.send( 'intend\r' )
+  } )
+
+  const opts = {
+    mode: 'normal',
+    list: require( '../test/youtube-search-results.json' )
+  }
+
+  const r = await nfzf( opts )
+  log( r )
+
+  t.equal( r.selected.value, '    506658 | 16-Bit Wave • Super Nintendo & Sega Genesis RetroWave Mix (38:13) | Axel Stone', 'Super Nintendo' )
+  t.equal( r.selected.index, 9, 'Super Nintendo index' )
+} )
+
+test( 'test normal mode 2 fiter combination', async function ( t ) {
+  t.plan( 2 )
+
+  // prepare mocked user input for nfzf
+  process.nextTick( function () {
+    // ctrl-j ( \x0A )
+    stdin.send( 'tro ni x chi\x0A\r' )
+  } )
+
+  const opts = {
+    mode: 'normal',
+    list: require( '../test/youtube-search-results.json' )
+  }
+
+  const r = await nfzf( opts )
+  log( r )
+
+  t.equal( r.selected.value, '    513166 | Interstellar (Chillwave - Retrowave - Electronic Mix) (51:36) | SoulSearchAndDestroy', 'Interstellar' )
+  t.equal( r.selected.index, 4, 'Interstellar index' )
+} )
