@@ -226,7 +226,7 @@ test( 'youtube search selection', async function ( t ) {
   t.equal( r.selected.index, 6, '~ N I G H T D R I V E ~ index' )
 } )
 
-test.only( 'test original index correct', async function ( t ) {
+test( 'test original index correct', async function ( t ) {
   t.plan( 2 )
 
   // prepare mocked user input for nfzf
