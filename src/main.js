@@ -455,7 +455,7 @@ function start ( opts, callback )
       if ( sp >= 0 ) {
         // end pointer ( last index of matched text )
         const ep = sp + filter.length
-        for ( let i = sp; i <= ep; i++ ) {
+        for ( let i = sp; i < ep; i++ ) {
           matches.push( i )
         }
       }
