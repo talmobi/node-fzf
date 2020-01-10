@@ -8,15 +8,15 @@ const stringWidth = require( 'string-width' )
 
 const clc = require( 'cli-color' )
 
+const modes = [ 'fuzzy', 'normal' ]
+
 module.exports = start
 
 function start ( opts, callback )
 {
   if ( Array.isArray( opts ) ) {
-    opts = {
-      list: opts,
-      mode: 'fzf'
-    }
+    opts.list = opts
+    opts.mode = 'fuzzy'
   }
 
   if ( typeof opts !== 'object' ) {
@@ -24,7 +24,7 @@ function start ( opts, callback )
   }
 
   opts.list = opts.list || []
-  opts.mode = opts.mode || 'fzf'
+  opts.mode = opts.mode || 'fuzzy'
 
   let _api = {}
 
@@ -343,13 +343,9 @@ function start ( opts, callback )
     function getMatches ( mode, filter, text )
     {
       switch ( mode.trim().toLowerCase() ) {
-        case 'word':
-        case 'words':
-        case 'text':
         case 'normal':
           return textMatches( filter, text )
 
-        case 'fzf':
         case 'fuzzy':
         default:
           // default to fuzzy matching
@@ -362,13 +358,9 @@ function start ( opts, callback )
     {
       // default to fuzzy matching
       switch ( mode.trim().toLowerCase() ) {
-        case 'word':
-        case 'words':
-        case 'text':
         case 'normal':
           return textList( filter, list )
 
-        case 'fzf':
         case 'fuzzy':
         default:
           // default to fuzzy matching
