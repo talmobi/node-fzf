@@ -340,7 +340,7 @@ function start ( opts, callback )
         case 'words':
         case 'text':
         case 'normal':
-          return wordMatches( filter, text )
+          return textMatches( filter, text )
 
         case 'fzf':
         case 'fuzzy':
@@ -359,7 +359,7 @@ function start ( opts, callback )
         case 'words':
         case 'text':
         case 'normal':
-          return wordList( filter, list )
+          return textList( filter, list )
 
         case 'fzf':
         case 'fuzzy':
@@ -439,7 +439,7 @@ function start ( opts, callback )
       return results
     }
 
-    function wordMatches ( filter, text )
+    function textMatches ( filter, text )
     {
       filter = filter.toLowerCase() // ex. foo
       text = text.toLowerCase() // ex. dog food is geat
@@ -463,7 +463,7 @@ function start ( opts, callback )
       return matches
     }
 
-    function wordList ( filter, list )
+    function textList ( filter, list )
     {
       const results = []
 
@@ -480,7 +480,7 @@ function start ( opts, callback )
         /* matches is an array of indexes on the normalizedItem string
          * that have matched the fuzz
          */
-        const matches = wordMatches( filter, normalizedItem )
+        const matches = textMatches( filter, normalizedItem )
 
         if ( matches.length === filter.length ) {
           /* When the matches.length is exacly the same as filter.length
@@ -762,8 +762,12 @@ function start ( opts, callback )
 // quick debugging, only executes when run with `node main.js`
 if ( require.main === module ) {
   ;( async function () {
+    const opts = {
+      mode: 'normal',
+      list: require( '../test/youtube-search-results.json' )
+    }
     // const r = await start( require( '../test/animals.json' ) )
-    const r = await start( require( '../test/youtube-search-results.json' ) )
+    const r = await start( opts )
     console.log( r.selected )
   } )()
 }
