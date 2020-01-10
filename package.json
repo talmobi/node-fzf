@@ -11,7 +11,7 @@
     "src/main.js"
   ],
   "scripts": {
-    "test": "node test/test.js"
+    "test": "tape test/test.js"
   },
   "keywords": [
     "node-fzf",
