@@ -86,4 +86,6 @@ also at the same time receive and handle raw keyboard input.
 [fzf](https://github.com/junegunn/fzf) even though it doesn't work in NodeJS directly is all-in-all a better tool than this piece of crap :) Highly recommend~
 
 ## Test
-No tests..
+```bash
+npm test
+```
