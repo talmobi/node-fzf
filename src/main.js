@@ -745,8 +745,10 @@ function start ( opts, callback )
       // reset cursor left position
       stdout.write( clc.move( -clc.windowSize.width ) )
 
+      const cursorOffset = stringWidth( buffer.slice( 0, cursorPosition ) )
+
       // set cursor left position
-      stdout.write( clc.move.right( 2 + cursorPosition ) )
+      stdout.write( clc.move.right( 2 + cursorOffset ) )
     }
 
     stdin.setRawMode && stdin.setRawMode( true )
