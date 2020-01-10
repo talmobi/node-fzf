@@ -41,7 +41,6 @@
     "ttys": "0.0.3"
   },
   "devDependencies": {
-    "faucet": "0.0.1",
     "mock-stdin": "~1.0.0",
     "tape": "~4.13.0"
   }
