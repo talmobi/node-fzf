@@ -19,9 +19,16 @@ function start ( opts, callback )
     }
   }
 
-  const promise = new Promise( function ( resolve, reject ) {
-    const _api = {}
+  if ( typeof opts !== 'object' ) {
+    throw new TypeError( 'arg0 has to be an array or an object' )
+  }
 
+  opts.list = opts.list || []
+  opts.mode = opts.mode || 'fzf'
+
+  let _api = {}
+
+  const promise = new Promise( function ( resolve, reject ) {
     let originalList = opts.list || []
     let _list = prepareList( originalList )
 
@@ -758,7 +765,12 @@ function start ( opts, callback )
 
     return _api
   } )
-  return promise
+
+  if ( !callback ) {
+    return promise
+  }
+
+  return _api
 }
 
 // quick debugging, only executes when run with `node main.js`
