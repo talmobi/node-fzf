@@ -22,16 +22,28 @@ function start ( opts, callback )
   const promise = new Promise( function ( resolve, reject ) {
     const _api = {}
 
-    let _list = opts.list || []
+    let originalList = opts.list || []
+    let _list = prepareList( originalList )
 
     let _input = ''
 
     _api.update = function ( list ) {
-      _list = list.slice()
+      originalList = list
+      _list = prepareList( originalList )
       render()
     }
 
     _api.stop = stop
+
+    function prepareList ( newList ) {
+      const list = newList.map( function ( value, index ) {
+        return {
+          originalValue: value, // text
+          originalIndex: index
+        }
+      } )
+      return list
+    }
 
     function stop () {
       stdin.removeListener( 'keypress', handleKeypress )
@@ -254,7 +266,7 @@ function start ( opts, callback )
             // } )
 
             return {
-              value: match.original,
+              value: match.originalValue,
               index: match.originalIndex,
               // matchedIndex: match.matchedIndex,
               // toString: function () {
@@ -389,12 +401,14 @@ function start ( opts, callback )
       const results = []
 
       for ( let i = 0; i < list.length; i++ ) {
-        const originalIndex = i
         const item = list[ i ]
+
+        const originalIndex = item.originalIndex
+        const originalValue = item.originalValue
 
         // get rid of unnecessary whitespace that only takes of
         // valuable scren space
-        const normalizedItem = item.split( /\s+/ ).join( ' ' )
+        const normalizedItem = originalValue.split( /\s+/ ).join( ' ' )
 
         /* matches is an array of indexes on the normalizedItem string
          * that have matched the fuzz
@@ -414,6 +428,7 @@ function start ( opts, callback )
 
           results.push( {
             originalIndex: originalIndex,
+            originalValue: originalValue,
             matchedIndex: results.length,
             original: item,
             text: t // what shows up on terminal/screen
@@ -453,12 +468,14 @@ function start ( opts, callback )
       const results = []
 
       for ( let i = 0; i < list.length; i++ ) {
-        const originalIndex = i
         const item = list[ i ]
+
+        const originalIndex = item.originalIndex
+        const originalValue = item.originalValue
 
         // get rid of unnecessary whitespace that only takes of
         // valuable scren space
-        const normalizedItem = item.split( /\s+/ ).join( ' ' )
+        const normalizedItem = originalValue.split( /\s+/ ).join( ' ' )
 
         /* matches is an array of indexes on the normalizedItem string
          * that have matched the fuzz
@@ -478,6 +495,7 @@ function start ( opts, callback )
 
           results.push( {
             originalIndex: originalIndex,
+            originalValue: originalValue,
             matchedIndex: results.length,
             original: item,
             text: t // what shows up on terminal/screen
@@ -606,8 +624,9 @@ function start ( opts, callback )
         const word = words[ i ]
         let list = _list // fuzzy match against all items in list
         if ( i > 0 ) {
-          // if we already have matches, fuzzy match against those
-          list = _matches.map( function ( r ) { return r.original } )
+          // if we already have matches, fuzzy match against
+          // those instead (combines the filters)
+          list = _matches
         }
         const matches = getList( opts.mode, word, list )
         _matches = matches
@@ -743,7 +762,8 @@ function start ( opts, callback )
 // quick debugging, only executes when run with `node main.js`
 if ( require.main === module ) {
   ;( async function () {
-    const r = await start( require( '../animals.json' ) )
+    // const r = await start( require( '../test/animals.json' ) )
+    const r = await start( require( '../test/youtube-search-results.json' ) )
     console.log( r.selected )
   } )()
 }
