@@ -80,8 +80,6 @@ function run ()
     } )
 
     process.stdin.on( 'end', function () {
-      console.log( 'end' )
-
       const list = (
         buffer.split( '\n' )
         .filter( function ( t ) { return t.trim().length > 0 } )
