@@ -21,6 +21,43 @@ find . | grep -v node_modules | nfzf
 ```
 
 #### API usage
+
+##### promises
+```js
+const nfzf = require( 'node-fzf' )
+
+const opts = {
+  list: [ 'whale', 'giraffe', 'monkey' ]
+}
+
+;( async function () {
+  // opens interactive selection CLI
+  // note! this messes with stdout so if you are
+  // writing to stdout at the same time it will look a bit messy..
+  const result = await nfzf( opts )
+
+  const { selected, query } = result
+
+  if( !selected ) {
+    console.log( 'No matches for:', query )
+  } else {
+    console.log( selected.value ) // 'giraffe'
+    console.log( selected.index ) // 1
+    console.log( selected.value === opts.list[ selected.index ] ) // true
+  }
+} )()
+
+// can also add more items later..
+setInterval( function () {
+  opts.list.push( 'foobar' )
+
+  // an .update method has been attached to the object/array
+  // that you gave to nfzf( ... )
+  opts.update( list )
+}, 1000 )
+```
+
+##### callbacks
 ```js
 const nfzf = require( 'node-fzf' )
 
@@ -30,13 +67,18 @@ const list = [ 'whale', 'giraffe', 'monkey' ]
 // note! this messes with stdout so if you are
 // writing to stdout at the same time it will look a bit messy..
 const api = nfzf( list, function ( result ) {
-  const { selected, query } = result;
+  const { selected, query } = result
   if( !selected ) {
     console.log( 'No matches for:', query )
   } else {
     console.log( selected.value ) // 'giraffe'
     console.log( selected.index ) // 1
     console.log( selected.value === list[ selected.index ] ) // true
+
+    // the api is a reference to the same argument0 object
+    // with an added .update method attached.
+    console.log( list === api ) // true
+    console.log( list.update === api.update ) // true
   }
 
 } )
@@ -46,10 +88,6 @@ setInterval( function () {
   list.push( 'foobar' )
   api.update( list )
 }, 1000 )
-
-// if you don't need the api returned by nfzf you can use
-// promises to await for the result only
-const result = await nfzf( list )
 ```
 
 #### Keyboard
