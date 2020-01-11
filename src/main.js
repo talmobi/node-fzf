@@ -17,9 +17,9 @@ const clc = require( 'cli-color' )
 // available filtering modes ( fuzzy by default )
 const modes = [ 'fuzzy', 'normal' ]
 
-module.exports = start
+module.exports = queryUser
 
-function start ( opts, callback )
+function queryUser ( opts, callback )
 {
   /* opts should reference same object at all times
    * as it will be returned as an api as well that the
@@ -797,8 +797,8 @@ if ( require.main === module ) {
       mode: 'normal',
       list: require( '../test/youtube-search-results.json' )
     }
-    // const r = await start( require( '../test/animals.json' ) )
-    const r = await start( opts )
+    // const r = await queryUser( require( '../test/animals.json' ) )
+    const r = await queryUser( opts )
     console.log( r.selected )
   } )()
 }
