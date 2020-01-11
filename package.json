@@ -8,7 +8,8 @@
   },
   "files": [
     "bin/cli.js",
-    "src/main.js"
+    "src/main.js",
+    "usage.txt"
   ],
   "scripts": {
     "test": "tape test/test.js"
