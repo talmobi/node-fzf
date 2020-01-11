@@ -26,35 +26,35 @@ function start ( opts, callback )
    * object in order to support promises when a callback
    * fn is omitted.
    */
+  const _opts = opts
 
-  if ( Array.isArray( opts ) ) {
-    opts.list = opts
-    opts.mode = 'fuzzy'
+  if ( Array.isArray( _opts ) ) {
+    _opts.list = _opts
+    _opts.mode = 'fuzzy'
   }
 
-  if ( typeof opts !== 'object' ) {
+  if ( typeof _opts !== 'object' ) {
     // in JavaScript arrays are also a typeof 'object'
     throw new TypeError( 'arg0 has to be an array or an object' )
   }
 
-  opts.list = opts.list || []
-  opts.mode = opts.mode || 'fuzzy'
-
-  const _api = opts
+  _opts.list = _opts.list || []
+  _opts.mode = _opts.mode || 'fuzzy'
 
   const promise = new Promise( function ( resolve, reject ) {
-    let originalList = opts.list || []
+    let originalList = _opts.list || []
     let _list = prepareList( originalList )
 
     let _input = ''
 
-    _api.update = function ( list ) {
+    _opts.update = function ( list ) {
       originalList = list
+      _opts.list = originalList
       _list = prepareList( originalList )
       render()
     }
 
-    _api.stop = stop
+    _opts.stop = stop
 
     function prepareList ( newList ) {
       const list = newList.map( function ( value, index ) {
@@ -165,8 +165,8 @@ function start ( opts, callback )
             // TODO ctrl-s support? switch between match modes?
             {
               // cleanDirtyScreen()
-              let i = modes.indexOf( opts.mode )
-              opts.mode = modes[ ++i % modes.length ]
+              let i = modes.indexOf( _opts.mode )
+              _opts.mode = modes[ ++i % modes.length ]
             }
             return render()
             break
@@ -652,7 +652,7 @@ function start ( opts, callback )
           // those instead (combines the filters)
           list = _matches
         }
-        const matches = getList( opts.mode, word, list )
+        const matches = getList( _opts.mode, word, list )
         _matches = matches
       }
 
@@ -688,7 +688,7 @@ function start ( opts, callback )
         let indexMap = {} // as map to prevent duplicates indexes
         for ( let i = 0; i < words.length; i++ ) {
           const word = words[ i ]
-          const matches = getMatches( opts.mode, word, match.text )
+          const matches = getMatches( _opts.mode, word, match.text )
           matches.forEach( function ( i ) {
             indexMap[ i ] = true
           } )
@@ -707,7 +707,7 @@ function start ( opts, callback )
       stdout.write( clcFgGreen( n + '/' + _list.length ) )
 
       // TODO print mode
-      stdout.write( ' ' + clcFgModeStatus( opts.mode  + ' mode' ) )
+      stdout.write( ' ' + clcFgModeStatus( _opts.mode  + ' mode' ) )
 
       stdout.write( '\n' )
 
@@ -784,15 +784,13 @@ function start ( opts, callback )
     stdin.resume()
 
     render()
-
-    return _api
   } )
 
   if ( !callback ) {
     return promise
   }
 
-  return _api
+  return _opts
 }
 
 // quick debugging, only executes when run with `node main.js`
