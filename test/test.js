@@ -435,8 +435,10 @@ test( 'test api update', async function ( t ) {
     const api = nfzf( opts, function ( r ) {
       log( r )
 
+      // a new result because the list was updated
       t.equal( r.selected.value, 'Apes', 'selected animals' )
       t.equal( opts.list[ 0 ], 'Apes', 'opts.list was updated' )
+
       t.equal( opts.update, api.update, 'opts.update === api.update' )
       t.equal( opts, api, 'opts === api' )
     } )
@@ -450,4 +452,41 @@ test( 'test api update', async function ( t ) {
       stdin.send( '\r' )
     } )
   } )
+} )
+
+test( 'test api update async/await', async function ( t ) {
+  t.plan( 4 )
+
+  // prepare mocked user input for nfzf
+  process.nextTick( function () {
+    stdin.send( '\r' )
+  } )
+
+  const opts = {
+    list: require( '../test/youtube-search-results.json' )
+  }
+
+  let r = await nfzf( opts )
+  log( r )
+
+  t.equal( r.selected.value, '    161745 | Earmake - Sensual/ Sensual (Vapor) (9:34) | NewRetroWave', 'selected youtube-search-result' )
+  t.equal( opts.list[ 0 ], r.selected.value, 'opts.list still the same' )
+
+  setTimeout( function () {
+    // update list to be of animals now instead
+    opts.update( require( '../test/animals.json' ) )
+
+    // prepare the same user input that will now select
+    // a new result because the list was updated
+    process.nextTick( function () {
+      stdin.send( '\r' )
+    } )
+  }, 100 )
+
+  r = await nfzf( opts )
+  log( r )
+
+  // a new result because the list was updated
+  t.equal( r.selected.value, 'Apes', 'selected animals' )
+  t.equal( opts.list[ 0 ], 'Apes', 'opts.list was updated' )
 } )
