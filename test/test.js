@@ -374,3 +374,41 @@ test( 'test jump to end ( ctrl-e )', async function ( t ) {
 
   t.equal( r.selected.index, 34, 'Izabelle' )
 } )
+
+test( 'test ctrl-s mode switching', async function ( t ) {
+  t.plan( 2 )
+
+  // prepare mocked user input for nfzf
+  process.nextTick( function () {
+    // ctrl-a ( \x01 ) ( beginning )
+    // ctrl-b ( \x02 ) ( back a word )
+    // ctrl-e ( \x05 ) ( end )
+    // ctrl-f ( \x06 ) ( forward a word )
+    // ctrl-s ( \x13 ) ( switch modes )
+    // ctrl-w ( \x17 ) ( delete a word )
+    stdin.send( 'msl bo\r' )
+  } )
+
+  const opts = {
+    mode: 'normal',
+    list: require( '../test/youtube-search-results.json' )
+  }
+
+  let r = await nfzf( opts )
+  log( r )
+
+  t.equal( r.selected, undefined, 'nothing found in normal mode' )
+
+  opts.mode = 'fuzzy'
+
+  // prepare the same user input that will result
+  // in a result in 'fuzzy' mode
+  process.nextTick( function () {
+    stdin.send( 'msl bo\r' )
+  } )
+
+  r = await nfzf( opts )
+  log( r )
+
+  t.equal( r.selected.index, 3, 'Paradise Music found in fuzzy mode' )
+} )
