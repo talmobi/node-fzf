@@ -10,6 +10,13 @@ const nfzf = require( path.join( __dirname, '../src/main.js' ) )
 
 const argv = require( 'minimist' )( process.argv.slice( 2 ) )
 
+const pkgJSON = require( path.join( __dirname, '../package.json' ) )
+
+if ( argv.version || argv.V || argv.v ) {
+  console.log( 'nfzf version: ' + pkgJSON.version )
+  process.exit()
+}
+
 const normalMode = ( argv.n || argv.normal || argv.norm )
 
 return run()
