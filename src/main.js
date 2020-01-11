@@ -14,11 +14,10 @@ module.exports = start
 
 function start ( opts, callback )
 {
-  /* opts has to remain the same object at all times
+  /* opts should reference same object at all times
    * as it will be returned as an api as well that the
    * user can use.
    */
-
 
   if ( Array.isArray( opts ) ) {
     opts.list = opts
