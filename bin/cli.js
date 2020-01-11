@@ -34,7 +34,7 @@ function run ()
       if ( err ) throw err
 
       const opts = {
-        mode: normalMode ? 'normal' : 'fzf',
+        mode: normalMode ? 'normal' : 'fuzzy',
         list: files
       }
 
@@ -51,7 +51,7 @@ function run ()
   } else {
     // update list later with input piped from stdin
     const opts = {
-      mode: normalMode ? 'normal' : 'fzf',
+      mode: normalMode ? 'normal' : 'fuzzy',
       list: [] // stdin will update it later
     }
 
