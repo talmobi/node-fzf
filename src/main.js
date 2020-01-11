@@ -1,13 +1,20 @@
+// used to read keyboard input while at the same time
+// reading piped stdin input and printing to stdout
 const keypress = require( 'keypress' )
 const ttys = require( 'ttys' )
 
 const stdin = ttys.stdin
 const stdout = ttys.stdout
 
+// get printed width of text
+// ex. 漢字 are 4 characters wide but still
+// only 2 characters in length
 const stringWidth = require( 'string-width' )
 
+// print/render to the terminal
 const clc = require( 'cli-color' )
 
+// available filtering modes ( fuzzy by default )
 const modes = [ 'fuzzy', 'normal' ]
 
 module.exports = start
