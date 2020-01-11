@@ -412,3 +412,40 @@ test( 'test ctrl-s mode switching', async function ( t ) {
 
   t.equal( r.selected.index, 3, 'Paradise Music found in fuzzy mode' )
 } )
+
+test( 'test api update', async function ( t ) {
+  t.plan( 4 )
+
+  // prepare mocked user input for nfzf
+  process.nextTick( function () {
+    stdin.send( '\r' )
+  } )
+
+  const opts = {
+    mode: 'normal',
+    list: require( '../test/youtube-search-results.json' )
+  }
+
+  nfzf( opts, function ( r ) {
+    log( r )
+
+    t.equal( r.selected.value, '    161745 | Earmake - Sensual/ Sensual (Vapor) (9:34) | NewRetroWave', 'selected youtube-search-result' )
+    t.equal( opts.list[ 0 ], r.selected.value, 'opts.list still the same' )
+
+    const api = nfzf( opts, function ( r ) {
+      log( r )
+
+      t.equal( r.selected.value, 'Apes', 'selected animals' )
+      t.equal( opts.list[ 0 ], 'Apes', 'opts.list was updated' )
+    } )
+
+    // update list to be of animals now instead
+    api.update( require( '../test/animals.json' ) )
+
+    // prepare the same user input that will now select
+    // a new result because the list was updated
+    process.nextTick( function () {
+      stdin.send( '\r' )
+    } )
+  } )
+} )
