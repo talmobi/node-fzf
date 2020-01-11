@@ -63,6 +63,7 @@ function queryUser ( opts, callback )
 
     _opts.stop = stop
 
+    // prepare provided list for internal searching/sorting
     function prepareList ( newList ) {
       const list = newList.map( function ( value, index ) {
         return {
