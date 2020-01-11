@@ -62,7 +62,7 @@ function queryUser ( opts, callback )
     }
 
     _opts.stop = function () {
-      finish( undefined )
+      finish()
     }
 
     // prepare provided list for internal searching/sorting
@@ -80,7 +80,10 @@ function queryUser ( opts, callback )
       if ( finish.done ) return
       finish.done = true
 
-      stop()
+      stdin.removeListener( 'keypress', handleKeypress )
+
+      stdin.setRawMode && stdin.setRawMode( false )
+      stdin.pause()
 
       if ( !result ) {
         result = {
@@ -98,13 +101,6 @@ function queryUser ( opts, callback )
       }
 
       resolve( result )
-    }
-
-    function stop () {
-      stdin.removeListener( 'keypress', handleKeypress )
-
-      stdin.setRawMode && stdin.setRawMode( false )
-      stdin.pause()
     }
 
     // make `process.stdin` begin emitting "keypress" events
