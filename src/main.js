@@ -288,21 +288,9 @@ function start ( opts, callback )
           stop()
 
           function transformResult ( match ) {
-            // match object format
-            // results.push( {
-            //   originalIndex: originalIndex,
-            //   matchedIndex: results.length,
-            //   original: item,
-            //   text: t // what shows up on terminal/screen
-            // } )
-
             return {
               value: match.originalValue,
               index: match.originalIndex,
-              // matchedIndex: match.matchedIndex,
-              // toString: function () {
-              //   return match.original
-              // }
             }
           }
 
