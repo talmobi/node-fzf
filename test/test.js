@@ -414,7 +414,7 @@ test( 'test ctrl-s mode switching', async function ( t ) {
 } )
 
 test( 'test api update', async function ( t ) {
-  t.plan( 4 )
+  t.plan( 6 )
 
   // prepare mocked user input for nfzf
   process.nextTick( function () {
@@ -437,6 +437,8 @@ test( 'test api update', async function ( t ) {
 
       t.equal( r.selected.value, 'Apes', 'selected animals' )
       t.equal( opts.list[ 0 ], 'Apes', 'opts.list was updated' )
+      t.equal( opts.update, api.update, 'opts.update === api.update' )
+      t.equal( opts, api, 'opts === api' )
     } )
 
     // update list to be of animals now instead
