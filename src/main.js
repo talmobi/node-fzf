@@ -61,7 +61,9 @@ function queryUser ( opts, callback )
       render()
     }
 
-    _opts.stop = stop
+    _opts.stop = function () {
+      finish( undefined )
+    }
 
     // prepare provided list for internal searching/sorting
     function prepareList ( newList ) {
@@ -72,6 +74,30 @@ function queryUser ( opts, callback )
         }
       } )
       return list
+    }
+
+    function finish ( result ) {
+      if ( finish.done ) return
+      finish.done = true
+
+      stop()
+
+      if ( !result ) {
+        result = {
+          selected: undefined,
+
+          // common alternatives for the same thing
+          query: buffer,
+          search: buffer,
+          input: buffer
+        }
+      }
+
+      if ( callback ) {
+        callback( result )
+      }
+
+      resolve( result )
     }
 
     function stop () {
@@ -120,12 +146,12 @@ function queryUser ( opts, callback )
 
       if ( key && key.ctrl && name === 'c' ) {
         cleanDirtyScreen()
-        return stop()
+        return finish()
       }
 
       if ( key && key.ctrl && name === 'z' ) {
         cleanDirtyScreen()
-        return stop()
+        return finish()
       }
 
       if ( key && key.ctrl && name === 'l' ) {
@@ -234,8 +260,7 @@ function queryUser ( opts, callback )
 
           case 'q': // quit
             cleanDirtyScreen()
-            return stop()
-            break
+            return finish()
         }
       }
 
@@ -277,23 +302,19 @@ function queryUser ( opts, callback )
         case 'enter':
           selectedIndex += 1
           return render()
-          break
 
         case 'up':
           selectedIndex -= 1
           return render()
-          break
 
         case 'esc':
         case 'escape':
           cleanDirtyScreen()
-          return stop()
-          break
+          return finish()
 
         // hit return key ( aka enter key ) ( aka ctrl-m )
         case 'return': // ctrl-m
           cleanDirtyScreen()
-          stop()
 
           function transformResult ( match ) {
             return {
@@ -311,14 +332,7 @@ function queryUser ( opts, callback )
             input: buffer
           }
 
-          if ( callback ) {
-            callback( result )
-          }
-
-          resolve( result )
-
-          return
-          break
+          return finish( result )
       }
 
       if ( chunk && chunk.length === 1 ) {
@@ -657,7 +671,7 @@ function queryUser ( opts, callback )
         selectedIndex = 0
       }
 
-      // print buffer arrow
+      // print input buffer arrow
       stdout.write( clcFgBufferArrow( '> ' ) )
       stdout.write( buffer )
       stdout.write( '\n' )
