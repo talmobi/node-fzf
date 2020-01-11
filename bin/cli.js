@@ -17,6 +17,12 @@ if ( argv.version || argv.V || argv.v ) {
   process.exit()
 }
 
+if ( argv.h || argv.help ) {
+  const text = fs.readFileSync( path.join( __dirname, '../usage.txt' ), 'utf8' )
+  console.log( text )
+  process.exit()
+}
+
 const normalMode = ( argv.n || argv.normal || argv.norm )
 
 return run()
