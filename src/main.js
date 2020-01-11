@@ -17,6 +17,14 @@ function start ( opts, callback )
   /* opts should reference same object at all times
    * as it will be returned as an api as well that the
    * user can use.
+   *
+   * a few functions will be added to opts that will
+   * work as an API to the user to ex. update the list
+   * at a later time.
+   *
+   * we do it like this instead of return a separate api
+   * object in order to support promises when a callback
+   * fn is omitted.
    */
 
   if ( Array.isArray( opts ) ) {
