@@ -347,13 +347,6 @@ function start ( opts, callback )
     const clcFgModeStatus = clc.xterm( 110 )
     const clcFgMatchGreen = clc.xterm( 107 )
 
-    function fuzzyMatch ( fuzz, text )
-    {
-      // TODO this fn not used anymore?
-      const matches = fuzzyMatches( fuzz, text )
-      return matches.length === fuzz.length
-    }
-
     // get matches based on the search mode
     function getMatches ( mode, filter, text )
     {
