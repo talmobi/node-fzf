@@ -308,9 +308,11 @@ function start ( opts, callback )
 
           const result = {
             selected: _selectedItem && transformResult( _selectedItem ) || undefined,
-            // matches: _matches.map( transformResult ),
-            // list: _list.slice(),
-            query: buffer
+
+            // common alternatives for the same thing
+            query: buffer,
+            search: buffer,
+            input: buffer
           }
 
           if ( callback ) {
