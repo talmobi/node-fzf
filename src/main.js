@@ -132,7 +132,7 @@ function queryUser ( opts, callback )
         // return stdout.write( clc.reset )
       }
 
-      const view_height = _printedMatches ? _printedMatches : 10
+      const view_height = _printedMatches || 10
 
       if ( key.ctrl ) {
         switch ( name ) {
@@ -298,7 +298,7 @@ function queryUser ( opts, callback )
           function transformResult ( match ) {
             return {
               value: match.originalValue,
-              index: match.originalIndex,
+              index: match.originalIndex
             }
           }
 
@@ -698,7 +698,7 @@ function queryUser ( opts, callback )
       stdout.write( clcFgGreen( n + '/' + _list.length ) )
 
       // TODO print mode
-      stdout.write( ' ' + clcFgModeStatus( _opts.mode  + ' mode' ) )
+      stdout.write( ' ' + clcFgModeStatus( _opts.mode + ' mode' ) )
 
       // show mode switch suggestion
       let suggestionColor = clc.blackBright
