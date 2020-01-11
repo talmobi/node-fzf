@@ -5,7 +5,7 @@
 #  node-fzf
 [fzf](https://github.com/junegunn/fzf) inspired fuzzy CLI list selection 🎀
 
-![](https://thumbs.gfycat.com/DisgustingElderlyIbadanmalimbe-size_restricted.gif)
+![](https://i.imgur.com/SFUV5nW.gif)
 
 ## Easy to use
 
