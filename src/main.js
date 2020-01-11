@@ -25,6 +25,7 @@ function start ( opts, callback )
   }
 
   if ( typeof opts !== 'object' ) {
+    // in JavaScript arrays are also a typeof 'object'
     throw new TypeError( 'arg0 has to be an array or an object' )
   }
 
