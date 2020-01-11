@@ -73,6 +73,8 @@ const result = await nfzf( list )
 <ctrl-f>                      jump forward a word
 
 <backspace>                   delete last input character
+
+<ctrl-s>                      switch between modes (fuzzy, normal)
 ```
 
 ## About
