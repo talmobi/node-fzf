@@ -709,6 +709,13 @@ function start ( opts, callback )
       // TODO print mode
       stdout.write( ' ' + clcFgModeStatus( _opts.mode  + ' mode' ) )
 
+      // show mode switch suggestion
+      let suggestionColor = clc.blackBright
+      if ( n === 0 || n === _opts.list.length ) {
+        suggestionColor = clc.yellowBright
+      }
+      stdout.write( suggestionColor( ' ctrl-s to switch' ) )
+
       stdout.write( '\n' )
 
       // select first item in list by default ( empty fuzzy search matches first
