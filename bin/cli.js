@@ -1,7 +1,5 @@
 #!/usr/bin/env node
 
-const keypress = require( 'keypress' )
-
 const fs = require( 'fs' )
 const path = require( 'path' )
 const glob = require( 'redstar' )
