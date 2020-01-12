@@ -17,7 +17,9 @@ npm install -g node-fzf
 nfzf
 
 # using pipes
-find . | grep -v node_modules | nfzf
+find . | nfzf | xargs cat | less
+alias merge="git branch | nfzf | xargs git merge"
+alias checkout="git branch | nfzf | xargs git checkout"
 ```
 
 #### API usage
