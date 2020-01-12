@@ -126,7 +126,8 @@ function queryUser ( opts, callback )
     const MIN_HEIGHT = 6
 
     function getMaxWidth () {
-      return clc.windowSize.width - 7
+      const mx = stdout.columns - 7
+      return Math.max( 0, mx )
     }
 
     const debug = false
@@ -555,7 +556,7 @@ function queryUser ( opts, callback )
        * the last characters that match are visible on the screen
        */
       const lastMatchIndex = indexes[ indexes.length - 1 ]
-      const marginRight = Math.ceil( clc.windowSize.width * 0.4 )
+      const marginRight = Math.ceil( stdout.columns * 0.4 )
 
       let matchMarginRight = ( lastMatchIndex + marginRight )
 
@@ -616,7 +617,7 @@ function queryUser ( opts, callback )
 
     function cleanDirtyScreen ()
     {
-      const width = clc.windowSize.width
+      const width = stdout.columns
       const writtenHeight = Math.max(
         MIN_HEIGHT,
         2 + _printedMatches
@@ -634,8 +635,8 @@ function queryUser ( opts, callback )
 
     function render ()
     {
-      const width = clc.windowSize.width
-      const height = clc.windowSize.height
+      const width = stdout.columns || clc.windowSize.width
+      const height = stdout.rows || clc.windowSize.height
       // console.log( 'window height: ' + height )
       // !debug && stdout.write( clc.erase.screen )
       // stdout.write( clc.move.to( 0, height ) )
@@ -694,6 +695,7 @@ function queryUser ( opts, callback )
             indexMap[ i ] = true
           } )
         }
+
 
         const indexes = Object.keys( indexMap )
         indexes.sort() // sort indexes
@@ -780,7 +782,7 @@ function queryUser ( opts, callback )
       // stdout.write( clc.move.right( 1 + buffer.length + 1 ) )
 
       // reset cursor left position
-      stdout.write( clc.move( -clc.windowSize.width ) )
+      stdout.write( clc.move( -stdout.columns ) )
 
       const cursorOffset = stringWidth( buffer.slice( 0, cursorPosition ) )
 
