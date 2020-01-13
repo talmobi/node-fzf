@@ -21,8 +21,35 @@ log = function () {}
 // list of animals for testing
 const animals = require( './animals.json' )
 
+const fs = require( 'fs' )
+const path = require( 'path' )
+
 // list of youtube search results for testing
 const ytr = require( './youtube-search-results.json' )
+
+test( 'package.json main path correct', function ( t ) {
+  t.plan( 1 )
+
+  try {
+    const pkg = require( path.join( __dirname, '../package.json' ) )
+    const stat = fs.statSync( path.join( __dirname, '../', pkg.main ) )
+    t.ok( stat )
+  } catch ( err ) {
+    t.fail( err )
+  }
+} )
+
+test( 'package.json bin path correct', function ( t ) {
+  t.plan( 1 )
+
+  try {
+    const pkg = require( path.join( __dirname, '../package.json' ) )
+    const stat = fs.statSync( path.join( __dirname, '../', pkg.bin.nfzf ) )
+    t.ok( stat )
+  } catch ( err ) {
+    t.fail( err )
+  }
+} )
 
 test( 'select first result', async function ( t ) {
   t.plan( 2 )
