@@ -596,3 +596,69 @@ test( 'test promise api update as plain array', async function ( t ) {
   t.equal( r.selected.value, 'Apes', 'selected animals' )
   t.equal( opts.list[ 0 ], 'Apes', 'opts.list was updated' )
 } )
+
+test( 'test getInput callback', async function ( t ) {
+  t.plan( 1 )
+
+  // prepare mocked user input for nfzf
+  process.nextTick( function () {
+    stdin.send( 'Mollie T. Muriel\r' )
+  } )
+
+  nfzf.getInput( 'Name: ', function ( r ) {
+    log( r )
+    t.equal( r.query, 'Mollie T. Muriel' )
+  } )
+} )
+
+test( 'test opts.nolist, opts.label callback', async function ( t ) {
+  t.plan( 1 )
+
+  // prepare mocked user input for nfzf
+  process.nextTick( function () {
+    stdin.send( 'Mollie T. Muriel\r' )
+  } )
+
+  const opts = {
+    label: 'Name: ',
+    nolist: true
+  }
+
+  nfzf( opts, function ( r ) {
+    log( r )
+    t.equal( r.query, 'Mollie T. Muriel' )
+  } )
+} )
+
+test( 'test getInput promise', async function ( t ) {
+  t.plan( 1 )
+
+  // prepare mocked user input for nfzf
+  process.nextTick( function () {
+    stdin.send( 'Mollie T. Muriel\r' )
+  } )
+
+  let r = await nfzf.getInput( 'Name: ' )
+  log( r )
+
+  t.equal( r.query, 'Mollie T. Muriel' )
+} )
+
+test( 'test opts.nolist, opts.label promise', async function ( t ) {
+  t.plan( 1 )
+
+  // prepare mocked user input for nfzf
+  process.nextTick( function () {
+    stdin.send( 'Mollie T. Muriel\r' )
+  } )
+
+  const opts = {
+    label: 'Name: ',
+    nolist: true
+  }
+
+  let r = await nfzf( opts )
+  log( r )
+
+  t.equal( r.query, 'Mollie T. Muriel' )
+} )
