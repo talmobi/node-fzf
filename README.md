@@ -28,6 +28,9 @@ alias checkout="git branch | nfzf | xargs git checkout"
 ```js
 const nfzf = require( 'node-fzf' )
 
+// if you only care about r.query
+// nfzf.getInput( label )
+
 const opts = {
   list: [ 'whale', 'giraffe', 'monkey' ]
 }
@@ -62,6 +65,9 @@ setInterval( function () {
 ##### callbacks
 ```js
 const nfzf = require( 'node-fzf' )
+
+// if you only care about r.query
+// nfzf.getInput( label, callback )
 
 const list = [ 'whale', 'giraffe', 'monkey' ]
 
