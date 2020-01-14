@@ -17,6 +17,7 @@ stdin.send = function send ( text ) {
 }
 
 log = function () {}
+// log = console.log
 
 // list of animals for testing
 const animals = require( './animals.json' )
