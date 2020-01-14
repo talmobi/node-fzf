@@ -19,6 +19,20 @@ const modes = [ 'fuzzy', 'normal' ]
 
 module.exports = queryUser
 
+// helper to only get user input
+module.exports.getInput = getInput
+
+function getInput ( label, callback )
+{
+  const opts = {
+    label: label,
+    list: [],
+    nolist: true // don't print list/matches
+  }
+
+  return queryUser( opts, callback )
+}
+
 function queryUser ( opts, callback )
 {
   /* opts should reference same object at all times
@@ -668,107 +682,124 @@ function queryUser ( opts, callback )
         selectedIndex = 0
       }
 
-      // print input buffer arrow
-      stdout.write( clcFgBufferArrow( '> ' ) )
+      const inputLabel = _opts.label || clcFgBufferArrow( '> ' )
+      const inputLabels = inputLabel.split( '\n' )
+      const lastInputLabel = inputLabels[ inputLabels.length - 1 ]
+      const inputLabelHeight = inputLabels.length - 1
+
+      if ( render.init ) stdout.write( clc.move.up( inputLabelHeight ) )
+      render.init = true
+
+      // print input label
+      stdout.write( inputLabel )
+
       stdout.write( buffer )
-      stdout.write( '\n' )
 
-      /* Here we color the matched items text for terminal
-       * printing based on what characters were found/matched.
-       *
-       * Since each filter is separated by space we first
-       * combine all matches from all filters(words).
-       *
-       * If we want to only color based on the most recent
-       * filter (last word) then just use the matches from the
-       * last word.
-       */
-      for ( let i = 0; i < _matches.length; i++ ) {
-        const match = _matches[ i ]
+      // do not print the list at all when `nolist` is set
+      // this is used when we only care about the input query
+      if ( !_opts.nolist ) {
+        stdout.write( '\n' )
 
-        const words = buffer.split( /\s+/ )
-        let indexMap = {} // as map to prevent duplicates indexes
-        for ( let i = 0; i < words.length; i++ ) {
-          const word = words[ i ]
-          const matches = getMatches( _opts.mode, word, match.text )
-          matches.forEach( function ( i ) {
-            indexMap[ i ] = true
-          } )
+        /* Here we color the matched items text for terminal
+        * printing based on what characters were found/matched.
+        *
+        * Since each filter is separated by space we first
+        * combine all matches from all filters(words).
+        *
+        * If we want to only color based on the most recent
+        * filter (last word) then just use the matches from the
+        * last word.
+        */
+        for ( let i = 0; i < _matches.length; i++ ) {
+          const match = _matches[ i ]
+
+          const words = buffer.split( /\s+/ )
+          let indexMap = {} // as map to prevent duplicates indexes
+          for ( let i = 0; i < words.length; i++ ) {
+            const word = words[ i ]
+            const matches = getMatches( _opts.mode, word, match.text )
+            matches.forEach( function ( i ) {
+              indexMap[ i ] = true
+            } )
+          }
+
+
+          const indexes = Object.keys( indexMap )
+          indexes.sort() // sort indexes
+
+          // transform the text to a colorized version
+          match.text = colorIndexesOnText( indexes, match.text /*, clcFgGreen */ )
         }
 
+        // print matches length vs original list length
+        const n = _matches.length
+        stdout.write( '  ' )
+        stdout.write( clcFgGreen( n + '/' + _list.length ) )
 
-        const indexes = Object.keys( indexMap )
-        indexes.sort() // sort indexes
+        // TODO print mode
+        stdout.write( ' ' + clcFgModeStatus( _opts.mode + ' mode' ) )
 
-        // transform the text to a colorized version
-        match.text = colorIndexesOnText( indexes, match.text /*, clcFgGreen */ )
-      }
-
-      // print matches length vs original list length
-      const n = _matches.length
-      stdout.write( '  ' )
-      stdout.write( clcFgGreen( n + '/' + _list.length ) )
-
-      // TODO print mode
-      stdout.write( ' ' + clcFgModeStatus( _opts.mode + ' mode' ) )
-
-      // show mode switch suggestion
-      let suggestionColor = clc.blackBright
-      if ( n === 0 || n === _opts.list.length ) {
-        suggestionColor = clc.yellowBright
-      }
-      stdout.write( suggestionColor( ' ctrl-s to switch' ) )
-
-      stdout.write( '\n' )
-
-      // select first item in list by default ( empty fuzzy search matches first
-      // item.. )
-      if ( !_selectedItem ) {
-        _selectedItem = _matches[ 0 ]
-      }
-
-      // print the matches
-      _printedMatches = 0
-
-      // max lines to use for printing matched results
-      const maxPrintedLines = Math.min( _matches.length, MIN_HEIGHT )
-
-      let paddingBottom = 2 // 1 extra padding at the bottom when scrolling down
-      if ( _matches.length <= MIN_HEIGHT ) {
-        // no extra padding at the bottom since there is no room for it
-        // - othewise first match is cut off and will not be visible
-        paddingBottom = 1
-      }
-
-      // first matched result to print
-      const startIndex = Math.max( 0, selectedIndex - maxPrintedLines + paddingBottom )
-
-      // last matched result to print
-      const endIndex = Math.min( maxPrintedLines + startIndex, _matches.length )
-
-      // print matches
-      for ( let i = startIndex; i < endIndex; i++ ) {
-        _printedMatches++
-
-        const match = _matches[ i ]
-
-        const item = match.text
-
-        const itemSelected = (
-          ( selectedIndex === i )
-        )
-
-        if ( itemSelected ) {
-          _selectedItem = match
-          stdout.write( clcBgGray( clcFgArrow( '> ' ) ) )
-          stdout.write( clcBgGray( item ) )
-          stdout.write( '\n' )
-        } else {
-          stdout.write( clcBgGray( ' ' ) )
-          stdout.write( ' ' )
-          stdout.write( item )
-          stdout.write( '\n' )
+        // show mode switch suggestion
+        let suggestionColor = clc.blackBright
+        if ( n === 0 || n === _opts.list.length ) {
+          suggestionColor = clc.yellowBright
         }
+        stdout.write( suggestionColor( ' ctrl-s to switch' ) )
+
+        stdout.write( '\n' )
+
+        // select first item in list by default ( empty fuzzy search matches first
+        // item.. )
+        if ( !_selectedItem ) {
+          _selectedItem = _matches[ 0 ]
+        }
+
+        // print the matches
+        _printedMatches = 0
+
+        // max lines to use for printing matched results
+        const maxPrintedLines = Math.min( _matches.length, MIN_HEIGHT )
+
+        let paddingBottom = 2 // 1 extra padding at the bottom when scrolling down
+        if ( _matches.length <= MIN_HEIGHT ) {
+          // no extra padding at the bottom since there is no room for it
+          // - othewise first match is cut off and will not be visible
+          paddingBottom = 1
+        }
+
+        // first matched result to print
+        const startIndex = Math.max( 0, selectedIndex - maxPrintedLines + paddingBottom )
+
+        // last matched result to print
+        const endIndex = Math.min( maxPrintedLines + startIndex, _matches.length )
+
+        // print matches
+        for ( let i = startIndex; i < endIndex; i++ ) {
+          _printedMatches++
+
+          const match = _matches[ i ]
+
+          const item = match.text
+
+          const itemSelected = (
+            ( selectedIndex === i )
+          )
+
+          if ( itemSelected ) {
+            _selectedItem = match
+            stdout.write( clcBgGray( clcFgArrow( '> ' ) ) )
+            stdout.write( clcBgGray( item ) )
+            stdout.write( '\n' )
+          } else {
+            stdout.write( clcBgGray( ' ' ) )
+            stdout.write( ' ' )
+            stdout.write( item )
+            stdout.write( '\n' )
+          }
+        }
+
+        // move back to cursor position after printing matches
+        stdout.write( clc.move.up( 2 + _printedMatches ) )
       }
 
       if ( _printedMatches < 1 ) {
@@ -776,18 +807,17 @@ function queryUser ( opts, callback )
         _selectedItem = undefined
       }
 
-      stdout.write( clc.move.up( 2 + _printedMatches ) )
-
-      // set cursor position to end of buffer
-      // stdout.write( clc.move.right( 1 + buffer.length + 1 ) )
+      // if ( inputLabelHeight > 0 ) stdout.write( clc.move.up( inputLabelHeight ) )
 
       // reset cursor left position
       stdout.write( clc.move( -stdout.columns ) )
 
       const cursorOffset = stringWidth( buffer.slice( 0, cursorPosition ) )
 
+      const cursorLeftPadding = stringWidth( lastInputLabel )
+
       // set cursor left position
-      stdout.write( clc.move.right( 2 + cursorOffset ) )
+      stdout.write( clc.move.right( cursorLeftPadding + cursorOffset ) )
     }
 
     stdin.setRawMode && stdin.setRawMode( true )
@@ -806,12 +836,7 @@ function queryUser ( opts, callback )
 // quick debugging, only executes when run with `node main.js`
 if ( require.main === module ) {
   ;( async function () {
-    const opts = {
-      mode: 'normal',
-      list: require( '../test/youtube-search-results.json' )
-    }
-    // const r = await queryUser( require( '../test/animals.json' ) )
-    const r = await queryUser( opts )
-    console.log( r.selected )
+    const r = await getInput( 'Name: ' )
+    console.log( r.query )
   } )()
 }
