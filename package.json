@@ -1,6 +1,6 @@
 {
   "name": "node-fzf",
-  "version": "0.4.5",
+  "version": "0.5.0",
   "description": "fzf ( junegunn/fzf ) inspired cli utility for node",
   "main": "src/main.js",
   "bin": {
