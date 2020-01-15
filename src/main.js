@@ -572,7 +572,34 @@ function queryUser ( opts, callback )
       // returned at the end of the function
       let t = text
 
-      let len = stringWidth( t ) // use string-width to keep length in check
+      // colorise in reverse because invisible ANSI color
+      // characters increases string length
+      paintBucket.sort( function ( a, b ) {
+        return b.index - a.index
+      } )
+
+      for ( let i = 0; i < paintBucket.length; i++ ) {
+        const paint = paintBucket[ i ]
+        const index = Number( paint.index )
+
+        // skip fuzzy chars that have shifted out of view
+        if ( index < 0 ) continue
+        if ( index > t.length ) continue
+
+        const c = paint.clc( t[ index ] )
+        t = t.slice( 0, index ) + c + t.slice( index + 1 )
+      }
+
+      // return the colorized match text
+      return t
+    }
+
+    function trimOnIndexes ( indexes, text )
+    {
+      let t = text
+      indexes.sort()
+      const lastIndex = indexes[ indexes.length - 1 ]
+
       const maxLen = getMaxWidth() // terminal width
 
       /* we want to show the user the last characters that matches
@@ -582,63 +609,50 @@ function queryUser ( opts, callback )
        * use the marginRight to shift the matched text left until
        * the last characters that match are visible on the screen
        */
-      const lastMatchIndex = indexes[ indexes.length - 1 ]
       const marginRight = Math.ceil( stdout.columns * 0.4 )
 
-      let matchMarginRight = ( lastMatchIndex + marginRight )
+      const lastMatchLength = stringWidth( t.slice( 0, lastIndex ) )
 
-      // but don't shift too much
-      if ( matchMarginRight > ( len + 8 ) ) matchMarginRight = ( len + 8 )
+      let shiftLeft = ( marginRight - lastMatchLength )
 
-      const shiftRight = ( maxLen - matchMarginRight )
-      let shiftAmount = 0
+      // [1] but not too much if there is no additional text
+      const delta = ( stringWidth( t ) - lastMatchLength )
+      if ( shiftLeft < -delta ) shiftLeft = -delta
+
       let startIndex = 0
-      let endIndex = len
+      let shiftAmount = 0
 
-      if ( shiftRight < 0 ) {
-        // we need to shift so that the matched text and margin is in view
-        shiftAmount = -shiftRight
-        t = '...' + t.slice( shiftAmount )
-
-        startIndex = 3
+      if ( shiftLeft < 0 ) {
+        // we need to shift left so that the matched text in view
+        while ( shiftAmount > shiftLeft ) {
+          startIndex++
+          shiftAmount = stringWidth( t.slice( 0, startIndex ) )
+          t = t.slice( startIndex )
+          if ( t.length <= 0 ) break // shouldn't happen because of [1]
+        }
       }
+
+      // normalize excessive lengths to avoid too much while looping
+      // if ( t.length > ( maxLen * 2 + 20 ) ) t = t.slice( 0, maxLen * 2 + 20 )
 
       /* Cut off from the end of the (visual) line until
        * it fits on the terminal width screen.
        */
-      len = stringWidth( t )
-      if ( len > maxLen ) {
-        let attempts = 0
-        while ( len > maxLen ) {
-          t = t.slice( 0, maxLen - attempts++ )
-
-          // re-calculate terminal/visual width
-          len = stringWidth( t )
-        }
-        t += '...'
-
-        endIndex = len
+      const tlen = t.length
+      let endIndex = t.length
+      while ( stringWidth( t ) > maxLen ) {
+        t = t.slice( 0, --endIndex )
+        if ( t.length <= 0 ) break
       }
 
-      // colorise in reverse because invisible ANSI color
-      // characters increases string length
-      paintBucket.sort( function ( a, b ) {
-        return b.index - a.index
-      } )
-
-      for ( let i = 0; i < paintBucket.length; i++ ) {
-        const paint = paintBucket[ i ]
-        const index = paint.index - shiftAmount + startIndex
-
-        // skip fuzzy chars that have shifted out of view
-        if ( index < startIndex ) continue
-        if ( index > endIndex ) continue
-
-        const c = paint.clc( t[ index ] )
-        t = t.slice( 0, index ) + c + t.slice( index + 1 )
+      if ( startIndex > 0 ) {
+        t = '...' + t
       }
 
-      // return the colorized match text
+      if ( endIndex < tlen ) {
+        t = t + '...'
+      }
+
       return t
     }
 
