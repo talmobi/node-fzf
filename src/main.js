@@ -747,7 +747,7 @@ function queryUser ( opts, callback )
           const match = _matches[ i ]
 
           const words = buffer.split( /\s+/ )
-          let indexMap = {} // as map to prevent duplicates indexes
+          const indexMap = {} // as map to prevent duplicates indexes
           for ( let i = 0; i < words.length; i++ ) {
             const word = words[ i ]
             const matches = getMatches( _opts.mode, word, match.text )
@@ -756,8 +756,10 @@ function queryUser ( opts, callback )
             } )
           }
 
-
-          const indexes = Object.keys( indexMap )
+          const indexes = (
+            Object.keys( indexMap )
+            .map( function ( i ) { return Number( i ) } )
+          )
           indexes.sort() // sort indexes
 
           // transform the text to a colorized version
