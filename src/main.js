@@ -597,10 +597,17 @@ function queryUser ( opts, callback )
     function trimOnIndexes ( indexes, text )
     {
       let t = text
-      indexes.sort()
+      indexes = (
+        indexes.map( function ( i ) { return Number( i ) } )
+      )
+      indexes.sort() // sort indexes
+
+      // the last ( right-most ) index/character we want to be
+      // visible on screen as centered as possible until there are
+      // no more text to be shown to the right of it
       const lastIndex = indexes[ indexes.length - 1 ]
 
-      const maxLen = getMaxWidth() // terminal width
+      const maxLen = getMaxWidth() - 2 // terminal width + padding
 
       /* we want to show the user the last characters that matches
        * as those are the most relevant
@@ -611,13 +618,16 @@ function queryUser ( opts, callback )
        */
       const marginRight = Math.ceil( stdout.columns * 0.4 )
 
+      // how wide the last index would be printed currently
       const lastMatchLength = stringWidth( t.slice( 0, lastIndex ) )
 
+      // how much to shift left to get last index to get into
+      // marginRight range (almost center)
       let shiftLeft = ( marginRight - lastMatchLength )
 
       // [1] but not too much if there is no additional text
-      const delta = ( stringWidth( t ) - lastMatchLength )
-      if ( shiftLeft < -delta ) shiftLeft = -delta
+      // const delta = ( stringWidth( t ) - lastMatchLength )
+      // if ( Math.abs( shiftLeft ) > delta ) shiftLeft = -Math.floor( delta * .5 )
 
       let startIndex = 0
       let shiftAmount = 0
@@ -626,10 +636,13 @@ function queryUser ( opts, callback )
         // we need to shift left so that the matched text in view
         while ( shiftAmount > shiftLeft ) {
           startIndex++
-          shiftAmount = stringWidth( t.slice( 0, startIndex ) )
-          t = t.slice( startIndex )
-          if ( t.length <= 0 ) break // shouldn't happen because of [1]
+          shiftAmount = -stringWidth( t.slice( 0, startIndex ) )
+          if ( startIndex >= t.length ) {
+            break // shouldn't happen because of [1]
+          }
         }
+
+        t = t.slice( startIndex )
       }
 
       // normalize excessive lengths to avoid too much while looping
@@ -653,7 +666,10 @@ function queryUser ( opts, callback )
         t = t + '...'
       }
 
-      return t
+      return {
+        text: t,
+        startOffset: startIndex ? ( startIndex - '...'.length ) : startIndex
+      }
     }
 
     function cleanDirtyScreen ()
@@ -686,7 +702,7 @@ function queryUser ( opts, callback )
 
       // calculate matches
       _matches = [] // reset matches
-      const words = buffer.split( /\s+/ )
+      const words = buffer.split( /\s+/ ).filter( function ( word ) { return word.length > 0 } )
       for ( let i = 0; i < words.length; i++ ) {
         const word = words[ i ]
         let list = _list // fuzzy match against all items in list
@@ -696,6 +712,12 @@ function queryUser ( opts, callback )
           list = _matches
         }
         const matches = getList( _opts.mode, word, list )
+        _matches = matches
+      }
+
+      // special case no input ( show all with no matches )
+      if ( words.length === 0 ) {
+        const matches = getList( _opts.mode, '', _list )
         _matches = matches
       }
 
@@ -746,7 +768,8 @@ function queryUser ( opts, callback )
         for ( let i = 0; i < _matches.length; i++ ) {
           const match = _matches[ i ]
 
-          const words = buffer.split( /\s+/ )
+          const words = buffer.split( /\s+/ ).filter( function ( word ) { return word.length > 0 } )
+
           const indexMap = {} // as map to prevent duplicates indexes
           for ( let i = 0; i < words.length; i++ ) {
             const word = words[ i ]
@@ -756,9 +779,18 @@ function queryUser ( opts, callback )
             } )
           }
 
+          // trim and position text ( horizontally ) based on
+          // last word/filter that matched ( most relevant )
+          const lastWord = words[ words.length - 1 ] || ' '
+          const lastIndexes = getMatches( _opts.mode, lastWord, match.text )
+          const { text, startOffset } = trimOnIndexes( lastIndexes, match.text )
+          match.text = text
+
+          if ( words.length === 0 ) continue
+
           const indexes = (
             Object.keys( indexMap )
-            .map( function ( i ) { return Number( i ) } )
+            .map( function ( i ) { return Number( i ) - startOffset } )
           )
           indexes.sort() // sort indexes
 
