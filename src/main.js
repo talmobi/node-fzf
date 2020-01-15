@@ -102,6 +102,9 @@ function queryUser ( opts, callback )
       stdin.pause()
 
       if ( !result ) {
+        // quit, exit, cancel, abort
+        buffer = undefined
+
         result = {
           selected: undefined,
 
