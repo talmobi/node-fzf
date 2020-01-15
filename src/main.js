@@ -68,6 +68,9 @@ function queryUser ( opts, callback )
 
     let _input = ''
 
+    // user defined vertical scrolling
+    let scrollOffset = 0
+
     _opts.update = function ( list ) {
       originalList = list
       _opts.list = originalList
@@ -284,6 +287,19 @@ function queryUser ( opts, callback )
           case 'q': // quit
             cleanDirtyScreen()
             return finish()
+        }
+      }
+
+      // usually ALT key
+      if ( key.meta ) {
+        switch ( name ) {
+          case 'n': // left arrow key
+            scrollOffset--
+            return render()
+
+          case 'p': // right arrow key
+            scrollOffset++
+            return render()
         }
       }
 
@@ -640,6 +656,11 @@ function queryUser ( opts, callback )
           if ( startIndex >= t.length ) {
             break // shouldn't happen because of [1]
           }
+        }
+
+        startIndex = startIndex + scrollOffset
+        if ( startIndex < 0 ) {
+          startIndex = 0
         }
 
         t = t.slice( startIndex )
