@@ -838,6 +838,7 @@ function queryUser ( opts, callback )
           suggestionColor = clc.yellowBright
         }
         stdout.write( suggestionColor( ' ctrl-s to switch' ) )
+        stdout.write( ' ' + clc.magenta( `[${ scrollOffset > 0 ? '+' : '' }${ scrollOffset }]` ) )
 
         stdout.write( '\n' )
 
