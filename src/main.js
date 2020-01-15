@@ -94,6 +94,8 @@ function queryUser ( opts, callback )
       if ( finish.done ) return
       finish.done = true
 
+      stdout.removeListener( 'resize', handleResize )
+
       stdin.removeListener( 'keypress', handleKeypress )
 
       stdin.setRawMode && stdin.setRawMode( false )
@@ -142,6 +144,13 @@ function queryUser ( opts, callback )
     function getMaxWidth () {
       const mx = stdout.columns - 7
       return Math.max( 0, mx )
+    }
+
+    stdout.on( 'resize', handleResize )
+
+    function handleResize () {
+      cleanDirtyScreen()
+      render()
     }
 
     const debug = false
@@ -687,7 +696,13 @@ function queryUser ( opts, callback )
       const lastInputLabel = inputLabels[ inputLabels.length - 1 ]
       const inputLabelHeight = inputLabels.length - 1
 
-      if ( render.init ) stdout.write( clc.move.up( inputLabelHeight ) )
+      if ( render.init ) {
+        stdout.write( clc.move.up( inputLabelHeight ) )
+      } else {
+        // get rid of dirt when being pushed above MIN_HEIGHT
+        // from the bottom of the terminal
+        cleanDirtyScreen()
+      }
       render.init = true
 
       // print input label
