@@ -645,6 +645,11 @@ function queryUser ( opts, callback )
         t = t.slice( startIndex )
       }
 
+      // console.log( 't.length: ' + t.length )
+      // console.log( 'shiftLeft: ' + shiftLeft )
+      // console.log( 'shiftamount: ' + shiftAmount )
+      // console.log( 'startindex: ' + startIndex )
+
       // normalize excessive lengths to avoid too much while looping
       // if ( t.length > ( maxLen * 2 + 20 ) ) t = t.slice( 0, maxLen * 2 + 20 )
 
