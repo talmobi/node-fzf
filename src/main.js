@@ -558,12 +558,13 @@ function queryUser ( opts, callback )
       return results
     }
 
-    function colorIndexesOnText ( indexes, text, clcColor ) {
+    function colorIndexesOnText ( indexes, text, clcColor )
+    {
       const paintBucket = [] // characters to colorize at the end
 
       for ( let i = 0; i < indexes.length; i++ ) {
         const index = indexes[ i ]
-        paintBucket.push( { index: index, clc: clcFgMatchGreen || clcColor } )
+        paintBucket.push( { index: index, clc: clcColor || clcFgMatchGreen } )
       }
 
       // copy match text colorize it based on the matches
