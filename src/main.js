@@ -155,8 +155,11 @@ function queryUser ( opts, callback )
     stdout.on( 'resize', handleResize )
 
     function handleResize () {
-      cleanDirtyScreen()
-      render()
+      clearTimeout( handleResize.timeout )
+      handleResize.timeout = setTimeout( function () {
+        cleanDirtyScreen()
+        render()
+      }, 1 )
     }
 
     const debug = false
