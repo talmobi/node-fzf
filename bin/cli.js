@@ -69,6 +69,16 @@ function run ()
     process.stdin.on( 'data', function ( chunk ) {
       buffer += chunk
 
+      // so you need this if you accidentally get stuck in
+      // a `cat | nfzf` loop
+      if (
+        chunk === '\x03' || // ctrl-c
+        chunk === '\x1B' // esc
+      ) {
+        console.log( 'exit' )
+        return process.exit( 1 )
+      }
+
       const list = (
         buffer.split( '\n' )
         .filter( function ( t ) { return t.trim().length > 0 } )
