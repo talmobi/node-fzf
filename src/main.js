@@ -661,13 +661,14 @@ function queryUser ( opts, callback )
           }
         }
 
-        startIndex = startIndex + scrollOffset
-        if ( startIndex < 0 ) {
-          startIndex = 0
-        }
-
-        t = t.slice( startIndex )
       }
+
+      startIndex = startIndex + scrollOffset
+      if ( startIndex < 0 ) {
+        startIndex = 0
+      }
+
+      t = t.slice( startIndex )
 
       // console.log( 't.length: ' + t.length )
       // console.log( 'shiftLeft: ' + shiftLeft )
