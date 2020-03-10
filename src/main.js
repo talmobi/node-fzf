@@ -652,7 +652,7 @@ function queryUser ( opts, callback )
       let shiftAmount = 0
 
       if ( shiftLeft < 0 ) {
-        // we need to shift left so that the matched text in view
+        // shift left so that the matched text is in view
         while ( shiftAmount > shiftLeft ) {
           startIndex++
           shiftAmount = -stringWidth( t.slice( 0, startIndex ) )
