@@ -635,7 +635,7 @@ function queryUser ( opts, callback )
        * use the marginRight to shift the matched text left until
        * the last characters that match are visible on the screen
        */
-      const marginRight = Math.ceil( stdout.columns * 0.4 )
+      const marginRight = Math.ceil( stdout.columns * 1 ) - 12
 
       // how wide the last index would be printed currently
       const lastMatchLength = stringWidth( t.slice( 0, lastIndex ) )
