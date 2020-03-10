@@ -801,6 +801,9 @@ function queryUser ( opts, callback )
 
           const indexMap = {} // as map to prevent duplicates indexes
           for ( let i = 0; i < words.length; i++ ) {
+            // highlights last word only
+            // if ( i !== ( words.length - 1 ) ) continue
+
             const word = words[ i ]
             const matches = getMatches( _opts.mode, word, match.text )
             matches.forEach( function ( i ) {
