@@ -827,23 +827,34 @@ function queryUser ( opts, callback )
           match.text = colorIndexesOnText( indexes, match.text /*, clcFgGreen */ )
         }
 
+        // status line/bar to show before the results
+        let statusLine = ''
+
         // print matches length vs original list length
         const n = _matches.length
-        stdout.write( '  ' )
-        stdout.write( clcFgGreen( n + '/' + _list.length ) )
+        statusLine += ( '  ' )
+        statusLine += ( clcFgGreen( n + '/' + _list.length ) )
 
-        // TODO print mode
-        stdout.write( ' ' + clcFgModeStatus( _opts.mode + ' mode' ) )
+        // print mode
+        statusLine += ( ' ' + clcFgModeStatus( _opts.mode + ' mode' ) )
 
-        // show mode switch suggestion
+        // print mode switch suggestion
         let suggestionColor = clc.blackBright
         if ( n === 0 || n === _opts.list.length ) {
           suggestionColor = clc.yellowBright
         }
-        stdout.write( suggestionColor( ' ctrl-s to switch' ) )
-        stdout.write( ' ' + clc.magenta( `[${ scrollOffset > 0 ? '+' : '' }${ scrollOffset }]` ) )
+        statusLine += ( suggestionColor( ' ctrl-s to switch' ) )
+        statusLine += ( ' ' + clc.magenta( `[${ scrollOffset > 0 ? '+' : '' }${ scrollOffset }]` ) )
 
-        stdout.write( '\n' )
+        statusLine += ( '\n' )
+
+        // limit statusline to terminal width
+        if ( stringWidth( statusLine.length ) > ( stdout.columns - 4 ) ) {
+          statusLine = statusLine.slice( 0, stdout.columns - 4 ) + '...'
+        }
+
+        // print the status line
+        stdout.write( statusLine )
 
         // select first item in list by default ( empty fuzzy search matches first
         // item.. )
