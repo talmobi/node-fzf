@@ -377,6 +377,20 @@ function queryUser ( opts, callback )
           return finish( result )
       }
 
+      /*
+      switch ( chunk ) {
+        case '<':
+          scrollOffset--
+          return render()
+          break
+
+        case '>':
+          scrollOffset++
+          return render()
+          break
+      }
+      */
+
       if ( chunk && chunk.length === 1 ) {
         let c = ''
         if ( key.shift ) {
