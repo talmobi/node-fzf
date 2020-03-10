@@ -325,17 +325,27 @@ function queryUser ( opts, callback )
           break
 
         case 'left': // left arrow key
-          cursorPosition--
-          if ( cursorPosition < 0 ) cursorPosition = 0
-          return render()
+          if ( _opts.nolist ) {
+            cursorPosition--
+            if ( cursorPosition < 0 ) cursorPosition = 0
+            return render()
+          } else {
+            scrollOffset--
+            return render()
+          }
           break
 
         case 'right': // right arrow key
-          cursorPosition++
-          if ( cursorPosition > buffer.length ) {
-            cursorPosition = buffer.length
+          if ( _opts.nolist ) {
+            cursorPosition++
+            if ( cursorPosition > buffer.length ) {
+              cursorPosition = buffer.length
+            }
+            return render()
+          } else {
+            scrollOffset++
+            return render()
           }
-          return render()
           break
 
         // text terminals treat ctrl-j as newline ( enter )
