@@ -687,11 +687,15 @@ function queryUser ( opts, callback )
             break // shouldn't happen because of [1]
           }
         }
-
       }
 
       startIndex = startIndex + scrollOffset
       if ( startIndex < 0 ) {
+        startIndex = 0
+      }
+
+      if ( stringWidth( t ) < maxLen ) {
+        // no need to offset as the whole thing fits anyway
         startIndex = 0
       }
 
