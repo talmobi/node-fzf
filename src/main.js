@@ -720,16 +720,16 @@ function queryUser ( opts, callback )
       }
 
       if ( startIndex > 0 ) {
-        t = '...' + t
+        t = '..' + t
       }
 
       if ( endIndex < tlen ) {
-        t = t + '...'
+        t = t + '..'
       }
 
       return {
         text: t,
-        startOffset: startIndex ? ( startIndex - '...'.length ) : startIndex
+        startOffset: startIndex ? ( startIndex - '..'.length ) : startIndex
       }
     }
 
@@ -885,7 +885,7 @@ function queryUser ( opts, callback )
 
         // limit statusline to terminal width
         if ( stringWidth( statusLine.length ) > ( stdout.columns - 4 ) ) {
-          statusLine = statusLine.slice( 0, stdout.columns - 4 ) + '...'
+          statusLine = statusLine.slice( 0, stdout.columns - 4 ) + '..'
         }
 
         // print the status line
