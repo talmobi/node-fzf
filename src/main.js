@@ -6,13 +6,16 @@ const ttys = require( 'ttys' )
 const stdin = ttys.stdin
 const stdout = ttys.stdout
 
+// print/render to the terminal
+const clc = require( 'cli-color' )
+
 // get printed width of text
 // ex. 漢字 are 4 characters wide but still
 // only 2 characters in length
-const stringWidth = require( 'string-width' )
-
-// print/render to the terminal
-const clc = require( 'cli-color' )
+const _stringWidth = require( 'string-width' )
+function stringWidth ( str ) {
+  return Math.max( clc.getStrippedLength( str ), _stringWidth( str ) )
+}
 
 // available filtering modes ( fuzzy by default )
 const modes = [ 'fuzzy', 'normal' ]
