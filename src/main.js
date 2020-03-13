@@ -699,6 +699,22 @@ function queryUser ( opts, callback )
         startIndex = 0
       }
 
+      // find minimum amount to cut that fits screen
+      // i.e., stop cutting off if the end has already been
+      // printed to the terminal
+      let delta = 0
+      for ( let i = 0; i < scrollOffset; i++ ) {
+        let s = t.slice( startIndex - i )
+
+        if ( stringWidth( s ) < maxLen ) {
+          continue
+        } else {
+          delta = i - 1
+          break
+        }
+      }
+
+      startIndex = startIndex - delta
       t = t.slice( startIndex )
 
       // console.log( 't.length: ' + t.length )
