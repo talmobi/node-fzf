@@ -1,3 +1,6 @@
+// Gracefully restore the CLI cursor on exit
+require( 'restore-cursor' )()
+
 // used to read keyboard input while at the same time
 // reading piped stdin input and printing to stdout
 const keypress = require( 'keypress' )
