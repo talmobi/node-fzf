@@ -9,6 +9,9 @@ const ttys = require( 'ttys' )
 const stdin = ttys.stdin
 const stdout = ttys.stdout
 
+// handle underlying terminal manipulations
+const blessed = require( 'blessed' )
+
 // print/render to the terminal
 const clc = require( 'cli-color' )
 
@@ -69,6 +72,28 @@ function queryUser ( opts, callback )
   _opts.mode = _opts.mode || 'fuzzy'
 
   const promise = new Promise( function ( resolve, reject ) {
+
+    const screen = blessed.screen( {
+      smartCSR: true,
+      width: '100%',
+      height: '100%',
+      scrollable: false,
+      draggable: false,
+    } )
+
+    screen.render()
+
+    let firstRender = false
+    // delay a bit to let off-screen init
+    setTimeout( function () {
+      firstRender = true
+      render()
+    }, 33 )
+
+    // screen.key( [ 'escape' ], function () {
+    //   return process.exit( 0 )
+    // } )
+
     let originalList = _opts.list || []
     let _list = prepareList( originalList )
 
@@ -102,10 +127,11 @@ function queryUser ( opts, callback )
     function finish ( result ) {
       if ( finish.done ) return
       finish.done = true
+      screen.destroy()
 
       stdout.removeListener( 'resize', handleResize )
 
-      stdin.removeListener( 'keypress', handleKeypress )
+      // stdin.removeListener( 'keypress', handleKeypress )
 
       stdin.setRawMode && stdin.setRawMode( false )
       stdin.pause()
@@ -124,15 +150,18 @@ function queryUser ( opts, callback )
         }
       }
 
-      if ( callback ) {
-        callback( result )
-      }
+      // delay a bit to let off-screen destroy
+      setTimeout( function () {
+        if ( callback ) {
+          callback( result )
+        }
 
-      resolve( result )
+        resolve( result )
+      }, 33 )
     }
 
     // make `process.stdin` begin emitting "keypress" events
-    keypress( stdin )
+    // keypress( stdin )
 
     // selected index relative to currently matched results
     // (filtered subset of _list)
@@ -316,6 +345,7 @@ function queryUser ( opts, callback )
       if ( key.meta ) return
 
       switch ( name ) {
+        case 'c-h': // ctrl-h
         case 'backspace': // ctrl-h
           {
             const a = buffer.slice( 0, cursorPosition - 1 )
@@ -356,8 +386,10 @@ function queryUser ( opts, callback )
 
         // text terminals treat ctrl-j as newline ( enter )
         // ref: https://ss64.com/bash/syntax-keyboard.html
+        case 'c-j':
+        case 'linefeed':
         case 'down': // ctrl-j
-        case 'enter':
+        // case 'enter':
           selectedIndex += 1
           return render()
 
@@ -371,6 +403,8 @@ function queryUser ( opts, callback )
           return finish()
 
         // hit return key ( aka enter key ) ( aka ctrl-m )
+        case 'c-m':
+        case 'enter':
         case 'return': // ctrl-m
           cleanDirtyScreen()
 
@@ -431,7 +465,10 @@ function queryUser ( opts, callback )
     }
 
     stdin.setEncoding( 'utf8' )
-    stdin.on( 'keypress', handleKeypress )
+
+    // stdin.on( 'keypress', handleKeypress )
+
+    screen.on( 'keypress', handleKeypress )
 
     const clcBgGray = clc.bgXterm( 236 )
     const clcFgArrow = clc.xterm( 198 )
@@ -980,12 +1017,16 @@ function queryUser ( opts, callback )
 
       // set cursor left position
       stdout.write( clc.move.right( cursorLeftPadding + cursorOffset ) )
+
+      // draw cursor position
+      if ( firstRender ) {
+        const charAtCursorPosition = buffer[ cursorPosition ] || ' '
+        stdout.write( clc.bgWhiteBright( clc.black( charAtCursorPosition ) ) )
+      }
     }
 
     stdin.setRawMode && stdin.setRawMode( true )
     stdin.resume()
-
-    render()
   } )
 
   if ( !callback ) {
