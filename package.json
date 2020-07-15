@@ -34,6 +34,7 @@
     "email": "talmo.christian@gmail.com"
   },
   "dependencies": {
+    "blessed": "~0.1.81",
     "cli-color": "~1.2.0",
     "keypress": "~0.2.1",
     "minimist": "~1.2.5",
