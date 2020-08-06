@@ -775,7 +775,7 @@ function queryUser ( opts, callback )
       const width = stdout.columns
       const writtenHeight = Math.max(
         MIN_HEIGHT,
-        2 + _printedMatches
+        2 + _printedMatches + 2
       )
 
       stdout.write( clc.move( -width ) )
