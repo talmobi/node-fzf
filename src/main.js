@@ -9,6 +9,8 @@ const ttys = require( 'ttys' )
 const stdin = ttys.stdin
 const stdout = ttys.stdout
 
+const size = require( 'window-size' )
+
 // print/render to the terminal
 const clc = require( 'cli-color' )
 
@@ -103,6 +105,7 @@ function queryUser ( opts, callback )
       if ( finish.done ) return
       finish.done = true
 
+      clearTimeout( checkResize.timeout )
       stdout.removeListener( 'resize', handleResize )
 
       stdin.removeListener( 'keypress', handleKeypress )
@@ -157,6 +160,21 @@ function queryUser ( opts, callback )
       const mx = stdout.columns - 7
       return Math.max( 0, mx )
     }
+
+    checkResize.prevCols = stdout.columns
+    function checkResize () {
+      const cols = size.get().width
+      if ( cols != checkResize.prevCols ) {
+        stdout.columns = cols
+        handleResize()
+      }
+      checkResize.prevCols = cols
+
+      clearTimeout( checkResize.timeout )
+      checkResize.timeout = setTimeout( checkResize, 333 )
+    }
+    clearTimeout( checkResize.timeout )
+    checkResize.timeout = setTimeout( checkResize, 333 )
 
     stdout.on( 'resize', handleResize )
 
