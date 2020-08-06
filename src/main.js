@@ -915,7 +915,7 @@ function queryUser ( opts, callback )
         if ( n === 0 || n === _opts.list.length ) {
           suggestionColor = clc.yellowBright
         }
-        statusLine += ( suggestionColor( ' ctrl-s to switch' ) )
+        statusLine += ( suggestionColor( ' ctrl-s' ) )
         statusLine += ( ' ' + clc.magenta( `[${ scrollOffset > 0 ? '+' : '' }${ scrollOffset }]` ) )
 
         statusLine += ( '\n' )
