@@ -918,12 +918,21 @@ function queryUser ( opts, callback )
         statusLine += ( suggestionColor( ' ctrl-s' ) )
         statusLine += ( ' ' + clc.magenta( `[${ scrollOffset > 0 ? '+' : '' }${ scrollOffset }]` ) )
 
-        statusLine += ( '\n' )
-
         // limit statusline to terminal width
-        if ( stringWidth( statusLine.length ) > ( stdout.columns - 4 ) ) {
-          statusLine = statusLine.slice( 0, stdout.columns - 4 ) + '..'
+        let statusLineEndIndex = statusLine.length
+        const statusLineMaxLen = stdout.columns - 4
+        while ( stringWidth( statusLine ) > statusLineMaxLen ) {
+          statusLine = statusLine.slice( 0, --statusLineEndIndex )
+          if ( statusLine.length <= 0 ) break
         }
+
+        if ( statusLine.length < statusLineEndIndex ) {
+          // add red space to prevent sliced colored text
+          // from bleeding forwards
+          statusLine = statusLine + clc.red( ' ' )
+        }
+
+        statusLine += ( '\n' )
 
         // print the status line
         stdout.write( statusLine )
