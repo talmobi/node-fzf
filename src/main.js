@@ -775,17 +775,21 @@ function queryUser ( opts, callback )
       const width = stdout.columns
       const writtenHeight = Math.max(
         MIN_HEIGHT,
-        2 + _printedMatches + 2
+        2 + _printedMatches
       )
 
       stdout.write( clc.move( -width ) )
 
       for ( let i = 0; i < writtenHeight; i++ ) {
-        stdout.write( clc.erase.line )
         stdout.write( clc.move.down( 1 ) )
       }
 
-      stdout.write( clc.move.up( writtenHeight ) )
+      for ( let i = 0; i < writtenHeight; i++ ) {
+        stdout.write( clc.erase.line )
+        stdout.write( clc.move.up( 1 ) )
+      }
+
+      stdout.write( clc.erase.line )
     }
 
     function render ()
