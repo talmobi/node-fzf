@@ -375,12 +375,21 @@ function queryUser ( opts, callback )
         // text terminals treat ctrl-j as newline ( enter )
         // ref: https://ss64.com/bash/syntax-keyboard.html
         case 'down': // ctrl-j
+        selectedIndex += 1
+        if(selectedIndex >= _matches.length) {
+          selectedIndex = 0;
+        }
+          return render()
+
         case 'enter':
           selectedIndex += 1
           return render()
 
         case 'up':
           selectedIndex -= 1
+          if(selectedIndex < 0) {
+            selectedIndex = _matches.length - 1;
+          }
           return render()
 
         case 'esc':
