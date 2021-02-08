@@ -32,7 +32,8 @@ const nfzf = require( 'node-fzf' )
 // nfzf.getInput( label )
 
 const opts = {
-  list: [ 'whale', 'giraffe', 'monkey' ]
+  list: [ 'whale', 'giraffe', 'monkey' ],
+  mode: 'normal' || 'fuzzy' // ( 'fuzzy', by default )
 }
 
 ;( async function () {
