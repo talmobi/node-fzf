@@ -64,6 +64,7 @@ function run ()
     } )
 
     let buffer = ''
+    const list = []
     process.stdin.setEncoding( 'utf8' )
 
     process.stdin.on( 'data', function ( chunk ) {
@@ -79,21 +80,35 @@ function run ()
         return process.exit( 1 )
       }
 
-      const list = (
-        buffer.split( '\n' )
-        .filter( function ( t ) { return t.trim().length > 0 } )
-      )
+      const lines = buffer.split( '\n' )
+      buffer = lines.pop() || ''
+      lines
+      .filter( function ( t ) { return t.trim().length > 0 } )
+      .forEach( function ( line ) {
+        list.push( line )
+      } )
 
-      api.update( list )
+      throttleUpdateList( list )
     } )
 
     process.stdin.on( 'end', function () {
-      const list = (
-        buffer.split( '\n' )
-        .filter( function ( t ) { return t.trim().length > 0 } )
-      )
+      const lines = buffer.split( '\n' )
+      lines
+      .filter( function ( t ) { return t.trim().length > 0 } )
+      .forEach( function ( line ) {
+        list.push( line )
+      } )
 
       api.update( list )
     } )
+
+    function throttleUpdateList ( list ) {
+      const now = Date.now()
+      throttleUpdateList.time = ( throttleUpdateList.time || now )
+      const delta = ( now - throttleUpdateList.time )
+      if ( delta < 100 ) {} else {
+        api.update( list )
+      }
+    }
   }
 }
