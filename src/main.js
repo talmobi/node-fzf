@@ -29,6 +29,7 @@ module.exports = queryUser
 
 // helper to only get user input
 module.exports.getInput = getInput
+module.exports.cliColor = clc
 
 function getInput ( label, callback )
 {
