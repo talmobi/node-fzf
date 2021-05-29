@@ -982,12 +982,32 @@ function queryUser ( opts, callback )
           if ( itemSelected ) {
             _selectedItem = match
             stdout.write( clcBgGray( clcFgArrow( '> ' ) ) )
+
+            if ( opts.prelinehook ) {
+              stdout.write( opts.prelinehook( match.originalIndex ) )
+            }
+
             stdout.write( clcBgGray( item ) )
+
+            if ( opts.postlinehook ) {
+              stdout.write( opts.postlinehook( match.originalIndex ) )
+            }
+
             stdout.write( '\n' )
           } else {
             stdout.write( clcBgGray( ' ' ) )
             stdout.write( ' ' )
+
+            if ( opts.prelinehook ) {
+              stdout.write( opts.prelinehook( match.originalIndex ) )
+            }
+
             stdout.write( item )
+
+            if ( opts.postlinehook ) {
+              stdout.write( opts.postlinehook( match.originalIndex ) )
+            }
+
             stdout.write( '\n' )
           }
         }
