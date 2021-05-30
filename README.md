@@ -32,8 +32,21 @@ const nfzf = require( 'node-fzf' )
 // nfzf.getInput( label )
 
 const opts = {
+  /* required */
   list: [ 'whale', 'giraffe', 'monkey' ],
-  mode: 'normal' || 'fuzzy' // ( 'fuzzy', by default )
+
+  /* optional (and defaults) */
+  // filtering mode (user can change modes by pressing ctrl-s)
+  mode: 'fuzzy' || 'normal',
+
+  // prefill user input
+  prefill: '',
+
+  // text before each displayed line, list index supplied as arg
+  prelinehook: function ( index ) { return '' }
+
+  // text after each displayed line, list index supplied as arg
+  postlinehook: function ( index ) { return '' }
 }
 
 ;( async function () {
