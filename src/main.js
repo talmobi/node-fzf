@@ -75,8 +75,6 @@ function queryUser ( opts, callback )
     let originalList = _opts.list || []
     let _list = prepareList( originalList )
 
-    let _input = ''
-
     // user defined vertical scrolling
     let scrollOffset = 0
 
@@ -116,15 +114,15 @@ function queryUser ( opts, callback )
 
       if ( !result ) {
         // quit, exit, cancel, abort
-        buffer = undefined
+        inputBuffer = undefined
 
         result = {
           selected: undefined,
 
           // common alternatives for the same thing
-          query: buffer,
-          search: buffer,
-          input: buffer
+          query: inputBuffer,
+          search: inputBuffer,
+          input: inputBuffer
         }
       }
 
@@ -143,7 +141,7 @@ function queryUser ( opts, callback )
     let selectedIndex = 0
 
     // input buffer
-    let buffer = ''
+    let inputBuffer = ''
 
     // input cursor position ( only horizontal )
     // relative to input buffer
@@ -222,7 +220,7 @@ function queryUser ( opts, callback )
 
           case 'b': // jump back 1 word
             {
-              const slice = buffer.slice( 0, cursorPosition )
+              const slice = inputBuffer.slice( 0, cursorPosition )
               const m = slice.match( /\S+\s*$/ ) // last word
               if ( m && m.index > 0 ) {
                 // console.log( m.index )
@@ -261,13 +259,13 @@ function queryUser ( opts, callback )
 
           case 'f': // jump forward 1 word
             {
-              const slice = buffer.slice( cursorPosition )
+              const slice = inputBuffer.slice( cursorPosition )
               const m = slice.match( /^\S+\s*/ ) // first word
               if ( m && m.index >= 0 && m[ 0 ] && m[ 0 ].length >= 0 ) {
                 // console.log( m.index )
                 cursorPosition += ( m.index + m[ 0 ].length )
               } else {
-                cursorPosition = buffer.length
+                cursorPosition = inputBuffer.length
               }
             }
             return render()
@@ -291,22 +289,22 @@ function queryUser ( opts, callback )
             break
 
           case 'e': // end of line
-            cursorPosition = buffer.length
+            cursorPosition = inputBuffer.length
             return render()
             break
 
           case 'w': // clear word
             {
-              const a = buffer.slice( 0, cursorPosition )
-              const b = buffer.slice( cursorPosition )
+              const a = inputBuffer.slice( 0, cursorPosition )
+              const b = inputBuffer.slice( cursorPosition )
               const m = a.match( /\S+\s*$/ ) // last word
               if ( m && m.index > 0 ) {
                 // console.log( m.index )
                 cursorPosition = m.index
-                buffer = a.slice( 0, cursorPosition ).concat( b )
+                inputBuffer = a.slice( 0, cursorPosition ).concat( b )
               } else {
                 cursorPosition = 0
-                buffer = b
+                inputBuffer = b
               }
             }
             return render()
@@ -337,9 +335,9 @@ function queryUser ( opts, callback )
       switch ( name ) {
         case 'backspace': // ctrl-h
           {
-            const a = buffer.slice( 0, cursorPosition - 1 )
-            const b = buffer.slice( cursorPosition )
-            buffer = a.concat( b )
+            const a = inputBuffer.slice( 0, cursorPosition - 1 )
+            const b = inputBuffer.slice( cursorPosition )
+            inputBuffer = a.concat( b )
 
             cursorPosition--
             if ( cursorPosition < 0 ) {
@@ -363,8 +361,8 @@ function queryUser ( opts, callback )
         case 'right': // right arrow key
           if ( _opts.nolist ) {
             cursorPosition++
-            if ( cursorPosition > buffer.length ) {
-              cursorPosition = buffer.length
+            if ( cursorPosition > inputBuffer.length ) {
+              cursorPosition = inputBuffer.length
             }
             return render()
           } else {
@@ -404,9 +402,9 @@ function queryUser ( opts, callback )
             selected: _selectedItem && transformResult( _selectedItem ) || undefined,
 
             // common alternatives for the same thing
-            query: buffer,
-            search: buffer,
-            input: buffer
+            query: inputBuffer,
+            search: inputBuffer,
+            input: inputBuffer
           }
 
           return finish( result )
@@ -435,13 +433,13 @@ function queryUser ( opts, callback )
         }
 
         if ( c ) {
-          const a = buffer.slice( 0, cursorPosition )
-          const b = buffer.slice( cursorPosition )
-          buffer = a.concat( c, b )
+          const a = inputBuffer.slice( 0, cursorPosition )
+          const b = inputBuffer.slice( cursorPosition )
+          inputBuffer = a.concat( c, b )
 
           cursorPosition++
-          if ( cursorPosition > buffer.length ) {
-            cursorPosition = buffer.length
+          if ( cursorPosition > inputBuffer.length ) {
+            cursorPosition = inputBuffer.length
           }
         }
 
@@ -805,7 +803,7 @@ function queryUser ( opts, callback )
 
       // calculate matches
       _matches = [] // reset matches
-      const words = buffer.split( /\s+/ ).filter( function ( word ) { return word.length > 0 } )
+      const words = inputBuffer.split( /\s+/ ).filter( function ( word ) { return word.length > 0 } )
       for ( let i = 0; i < words.length; i++ ) {
         const word = words[ i ]
         let list = _list // fuzzy match against all items in list
@@ -851,7 +849,7 @@ function queryUser ( opts, callback )
       // print input label
       stdout.write( inputLabel )
 
-      stdout.write( buffer )
+      stdout.write( inputBuffer )
 
       // do not print the list at all when `nolist` is set
       // this is used when we only care about the input query
@@ -871,7 +869,7 @@ function queryUser ( opts, callback )
         for ( let i = 0; i < _matches.length; i++ ) {
           const match = _matches[ i ]
 
-          const words = buffer.split( /\s+/ ).filter( function ( word ) { return word.length > 0 } )
+          const words = inputBuffer.split( /\s+/ ).filter( function ( word ) { return word.length > 0 } )
 
           const indexMap = {} // as map to prevent duplicates indexes
           for ( let i = 0; i < words.length; i++ ) {
@@ -1026,7 +1024,7 @@ function queryUser ( opts, callback )
       // reset cursor left position
       stdout.write( clc.move( -stdout.columns ) )
 
-      const cursorOffset = stringWidth( buffer.slice( 0, cursorPosition ) )
+      const cursorOffset = stringWidth( inputBuffer.slice( 0, cursorPosition ) )
 
       const cursorLeftPadding = stringWidth( lastInputLabel )
 
