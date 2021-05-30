@@ -141,11 +141,11 @@ function queryUser ( opts, callback )
     let selectedIndex = 0
 
     // input buffer
-    let inputBuffer = ''
+    let inputBuffer = _opts.prefill || ''
 
     // input cursor position ( only horizontal )
     // relative to input buffer
-    let cursorPosition = 0
+    let cursorPosition = inputBuffer.length
 
     // number of items printed on screen, usually ~7
     let _printedMatches = 0
