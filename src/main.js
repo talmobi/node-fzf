@@ -62,7 +62,7 @@ function queryUser ( opts, callback )
 
   if ( Array.isArray( _opts ) ) {
     _opts.list = _opts
-    _opts.mode = 'fuzzy'
+    _opts.mode = _opts.mode || 'fuzzy'
   }
 
   if ( typeof _opts !== 'object' ) {
