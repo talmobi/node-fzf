@@ -114,6 +114,8 @@ setInterval( function () {
 
 #### Keyboard
 ```bash
+<ctrl-s>                      switch between search modes (fuzzy, normal/exact)
+
 <ctrl-j>,<ctrl-n>,down        scroll down
 <ctrl-k>,<ctrl-p>,up          scroll up
 
@@ -133,8 +135,6 @@ setInterval( function () {
 <ctrl-f>                      jump forward a word
 
 <backspace>                   delete last input character
-
-<ctrl-s>                      switch between modes (fuzzy, normal)
 ```
 
 ## About
@@ -154,7 +154,7 @@ also at the same time receive and handle raw keyboard input.
 
 [yt-search](https://github.com/talmobi/yt-search)
 
-## Alternatives
+## Similar
 [fzf](https://github.com/junegunn/fzf) even though it doesn't work in NodeJS directly is all-in-all a better tool than this piece of crap :) Highly recommend~
 
 [ipt](https://github.com/ruyadorno/ipt) - similar node based solution
