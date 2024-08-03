@@ -685,3 +685,5 @@ test( 'test prefilled query', async function ( t ) {
 } )
 
 // TODO test --keep-right somehow..
+// TODO implement and test for --keep-left?
+// TODO add support for query or using '|' similar to fzf?
