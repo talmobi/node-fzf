@@ -663,3 +663,25 @@ test( 'test opts.nolist, opts.label promise', async function ( t ) {
 
   t.equal( r.query, 'Mollie T. Muriel' )
 } )
+
+test( 'test prefilled query', async function ( t ) {
+  t.plan( 1 )
+
+  // prepare mocked user input for nfzf
+  process.nextTick( function () {
+    stdin.send( 'Mollie\r' )
+  } )
+
+  const opts = {
+    label: 'Name: ',
+    prefill: 'Apa the ',
+    nolist: true
+  }
+
+  let r = await nfzf( opts )
+  log( r )
+
+  t.equal( r.query, 'Apa the Mollie' )
+} )
+
+// TODO test --keep-right somehow..
