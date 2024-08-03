@@ -33,7 +33,10 @@ function run ()
 
       const opts = {
         mode: normalMode ? 'normal' : 'fuzzy',
-        list: files
+        list: files,
+
+        // Start finder with given prefilled query (similar to fzf)
+        prefill: argv.query || argv.q,
       }
 
       nfzf( opts, function ( result ) {
@@ -50,7 +53,10 @@ function run ()
     // update list later with input piped from stdin
     const opts = {
       mode: normalMode ? 'normal' : 'fuzzy',
-      list: [] // stdin will update it later
+      list: [], // stdin will update it later
+
+      // Start finder with given prefilled query (similar to fzf)
+      prefill: argv.query || argv.q,
     }
 
     const api = nfzf( opts, function ( result ) {
