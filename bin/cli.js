@@ -37,6 +37,7 @@ function run ()
 
         // Start finder with given prefilled query (similar to fzf)
         prefill: argv.query || argv.q,
+        rightAligned: !!argv['keep-right'],
       }
 
       nfzf( opts, function ( result ) {
@@ -57,7 +58,9 @@ function run ()
 
       // Start finder with given prefilled query (similar to fzf)
       prefill: argv.query || argv.q,
+      rightAligned: !!argv['keep-right'],
     }
+
 
     const api = nfzf( opts, function ( result ) {
       if ( result.selected ) {

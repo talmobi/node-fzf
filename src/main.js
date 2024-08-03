@@ -24,6 +24,7 @@ function stringWidth ( str ) {
 
 // available filtering modes ( fuzzy by default )
 const modes = [ 'fuzzy', 'normal' ]
+let rightAligned = false
 
 module.exports = queryUser
 
@@ -57,6 +58,7 @@ function queryUser ( opts, callback )
    * fn is omitted.
    */
   const _opts = opts
+  rightAligned = !!opts.rightAligned
 
   if ( Array.isArray( _opts ) ) {
     _opts.list = _opts
@@ -291,7 +293,11 @@ function queryUser ( opts, callback )
             // TODO right-align names if already at end of line (useful for
             // list of filenames with long paths to see the end of the
             // filenames on the list)
-            cursorPosition = inputBuffer.length
+            if ( cursorPosition === inputBuffer.length ) {
+              rightAligned = !rightAligned
+            } else {
+              cursorPosition = inputBuffer.length
+            }
             return render()
             break
 
@@ -885,23 +891,44 @@ function queryUser ( opts, callback )
             } )
           }
 
-          // trim and position text ( horizontally ) based on
-          // last word/filter that matched ( most relevant )
-          const lastWord = words[ words.length - 1 ] || ' '
-          const lastIndexes = getMatches( _opts.mode, lastWord, match.text )
-          const { text, startOffset } = trimOnIndexes( lastIndexes, match.text )
-          match.text = text
+          if ( !rightAligned ) {
+            // trim and position text ( horizontally ) based on
+            // last word/filter that matched ( most relevant )
+            const lastWord = words[ words.length - 1 ] || ' '
+            const lastIndexes = getMatches( _opts.mode, lastWord, match.text )
+            const { text, startOffset } = trimOnIndexes( lastIndexes, match.text )
+            match.text = text
 
-          if ( words.length === 0 ) continue
+            // skip colorization (no matches -> nothing to colorize)
+            if ( words.length === 0 ) continue
 
-          const indexes = (
-            Object.keys( indexMap )
-            .map( function ( i ) { return Number( i ) - startOffset } )
-          )
-          indexes.sort() // sort indexes
+            const indexes = (
+              Object.keys( indexMap )
+              .map( function ( i ) { return Number( i ) - startOffset } )
+            )
+            indexes.sort() // sort indexes
 
-          // transform the text to a colorized version
-          match.text = colorIndexesOnText( indexes, match.text /*, clcFgGreen */ )
+            // transform the text to a colorized version
+            match.text = colorIndexesOnText( indexes, match.text /*, clcFgGreen */ )
+          } else {
+            // trim and position text ( horizontally ) so that the end of
+            // the matched text is visible on the screen on the right
+            // screen edge
+            const { text, startOffset } = trimOnIndexes( [ match.text.length - 1 ], match.text )
+            match.text = text
+
+            // skip colorization (no matches -> nothing to colorize)
+            if ( words.length === 0 ) continue
+
+            const indexes = (
+              Object.keys( indexMap )
+              .map( function ( i ) { return Number( i ) - startOffset } )
+            )
+            indexes.sort() // sort indexes
+
+            // transform the text to a colorized version
+            match.text = colorIndexesOnText( indexes, match.text /*, clcFgGreen */ )
+          }
         }
 
         // status line/bar to show before the results
@@ -920,7 +947,14 @@ function queryUser ( opts, callback )
         if ( n === 0 || n === _opts.list.length ) {
           suggestionColor = clc.yellowBright
         }
-        statusLine += ( suggestionColor( ' ctrl-s' ) )
+
+        // display rightAlign mode and keybind suggestion
+        let rightAlignColor = clc.blackBright
+        if (rightAligned) {
+          rightAlignColor = clc.yellowBright
+        }
+        statusLine += ( rightAlignColor( ' ctrl-e' ) )
+
         statusLine += ( ' ' + clc.magenta( `[${ scrollOffset > 0 ? '+' : '' }${ scrollOffset }]` ) )
 
         // limit statusline to terminal width
