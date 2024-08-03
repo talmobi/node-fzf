@@ -943,9 +943,10 @@ function queryUser ( opts, callback )
         statusLine += ( ' ' + clcFgModeStatus( _opts.mode + ' mode' ) )
 
         // print mode switch suggestion
-        let suggestionColor = clc.blackBright
-        if ( n === 0 || n === _opts.list.length ) {
-          suggestionColor = clc.yellowBright
+        if ( _opts.mode === 'fuzzy' ) {
+          statusLine += ( clc.blackBright( ' ctrl-s' ) )
+        } else {
+          statusLine += ( clc.yellowBright( ' ctrl-s' ) )
         }
 
         // display rightAlign mode and keybind suggestion
