@@ -248,7 +248,6 @@ function queryUser ( opts, callback )
             break
 
           case 's':
-            // TODO ctrl-s support? switch between match modes?
             {
               // cleanDirtyScreen()
               let i = modes.indexOf( _opts.mode )
@@ -289,6 +288,9 @@ function queryUser ( opts, callback )
             break
 
           case 'e': // end of line
+            // TODO right-align names if already at end of line (useful for
+            // list of filenames with long paths to see the end of the
+            // filenames on the list)
             cursorPosition = inputBuffer.length
             return render()
             break
