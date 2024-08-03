@@ -36,8 +36,8 @@ function run ()
         list: files,
 
         // Start finder with given prefilled query (similar to fzf)
-        prefill: argv.query || argv.q,
-        rightAligned: !!argv['keep-right'],
+        query: argv.query || argv.q,
+        keepRight: !!argv['keep-right'],
       }
 
       nfzf( opts, function ( result ) {
@@ -57,8 +57,8 @@ function run ()
       list: [], // stdin will update it later
 
       // Start finder with given prefilled query (similar to fzf)
-      prefill: argv.query || argv.q,
-      rightAligned: !!argv['keep-right'],
+      query: argv.query || argv.q,
+      keepRight: !!argv['keep-right'],
     }
 
 

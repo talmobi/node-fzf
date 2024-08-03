@@ -674,7 +674,7 @@ test( 'test prefilled query', async function ( t ) {
 
   const opts = {
     label: 'Name: ',
-    prefill: 'Apa the ',
+    query: 'Apa the ',
     nolist: true
   }
 

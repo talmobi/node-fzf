@@ -24,7 +24,6 @@ function stringWidth ( str ) {
 
 // available filtering modes ( fuzzy by default )
 const modes = [ 'fuzzy', 'normal' ]
-let rightAligned = false
 
 module.exports = queryUser
 
@@ -58,7 +57,6 @@ function queryUser ( opts, callback )
    * fn is omitted.
    */
   const _opts = opts
-  rightAligned = !!opts.rightAligned
 
   if ( Array.isArray( _opts ) ) {
     _opts.list = _opts
@@ -143,7 +141,7 @@ function queryUser ( opts, callback )
     let selectedIndex = 0
 
     // input buffer
-    let inputBuffer = _opts.prefill || ''
+    let inputBuffer = _opts.query || ''
 
     // input cursor position ( only horizontal )
     // relative to input buffer
@@ -294,7 +292,7 @@ function queryUser ( opts, callback )
             // list of filenames with long paths to see the end of the
             // filenames on the list)
             if ( cursorPosition === inputBuffer.length ) {
-              rightAligned = !rightAligned
+              _opts.keepRight = !_opts.keepRight
             } else {
               cursorPosition = inputBuffer.length
             }
@@ -891,7 +889,7 @@ function queryUser ( opts, callback )
             } )
           }
 
-          if ( !rightAligned ) {
+          if ( !_opts.keepRight ) {
             // trim and position text ( horizontally ) based on
             // last word/filter that matched ( most relevant )
             const lastWord = words[ words.length - 1 ] || ' '
@@ -942,19 +940,19 @@ function queryUser ( opts, callback )
         // print mode
         statusLine += ( ' ' + clcFgModeStatus( _opts.mode + ' mode' ) )
 
-        // print mode switch suggestion
+        // print mode ui legend
         if ( _opts.mode === 'fuzzy' ) {
           statusLine += ( clc.blackBright( ' ctrl-s' ) )
         } else {
           statusLine += ( clc.yellowBright( ' ctrl-s' ) )
         }
 
-        // display rightAlign mode and keybind suggestion
-        let rightAlignColor = clc.blackBright
-        if (rightAligned) {
-          rightAlignColor = clc.yellowBright
+        // print --keep-right ui legend
+        let keepRightColor = clc.blackBright
+        if (_opts.keepRight) {
+          keepRightColor = clc.yellowBright
         }
-        statusLine += ( rightAlignColor( ' ctrl-e' ) )
+        statusLine += ( keepRightColor( ' ctrl-e' ) )
 
         statusLine += ( ' ' + clc.magenta( `[${ scrollOffset > 0 ? '+' : '' }${ scrollOffset }]` ) )
 
