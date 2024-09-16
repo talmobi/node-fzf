@@ -42,6 +42,9 @@ const opts = {
   // prefill user input
   prefill: '',
 
+  // desired quantity of results per page (defaults to 6)
+  maxResults: 6,
+
   // text before each displayed line, list index supplied as arg
   prelinehook: function ( index ) { return '' },
 
