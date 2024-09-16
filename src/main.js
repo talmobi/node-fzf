@@ -153,7 +153,7 @@ function queryUser ( opts, callback )
     let _matches = []
     let _selectedItem
 
-    const MIN_HEIGHT = 6
+    const MIN_HEIGHT = _opts.maxResults || 6
 
     function getMaxWidth () {
       const mx = stdout.columns - 7
