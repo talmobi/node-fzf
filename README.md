@@ -43,7 +43,7 @@ const opts = {
   prefill: '',
 
   // text before each displayed line, list index supplied as arg
-  prelinehook: function ( index ) { return '' }
+  prelinehook: function ( index ) { return '' },
 
   // text after each displayed line, list index supplied as arg
   postlinehook: function ( index ) { return '' }
