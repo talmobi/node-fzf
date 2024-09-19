@@ -42,8 +42,8 @@ const opts = {
   // prefill user input
   prefill: '',
 
-  // desired quantity of results per page (defaults to 6)
-  maxResults: 6,
+  // % of screen to use to display results (minimum/defaults to 6 rows)
+  height: 0, // ex: 40 for 40%, 100 for 100%
 
   // text before each displayed line, list index supplied as arg
   prelinehook: function ( index ) { return '' },
