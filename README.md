@@ -126,13 +126,13 @@ setInterval( function () {
 <ctrl-u>                      scroll up by page size
 
 <ctrl-a>                      jump to start of input
-<ctrl-e>                      jump to end of input
+<ctrl-e>                      jump to end of input (and toggles --keep-right)
 
 <esc>,<ctrl-q>,<ctrl-c>       cancel
 
 <return>,<ctrl-m>             trigger callback/promise with current selection and exit
 
-<ctrl-w>                      delte last word from input
+<ctrl-w>                      delete last word from input
 
 <ctrl-b>                      jump back a word
 <ctrl-f>                      jump forward a word
