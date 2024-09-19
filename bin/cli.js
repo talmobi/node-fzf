@@ -37,6 +37,7 @@ function run ()
 
         // Start finder with given prefilled query (similar to fzf)
         query: argv.query || argv.q,
+        height: argv.height,
         keepRight: !!argv['keep-right'],
       }
 
@@ -58,6 +59,7 @@ function run ()
 
       // Start finder with given prefilled query (similar to fzf)
       query: argv.query || argv.q,
+      height: argv.height,
       keepRight: !!argv['keep-right'],
     }
 
