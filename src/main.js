@@ -984,8 +984,20 @@ function queryUser ( opts, callback )
         // print the matches
         _printedMatches = 0
 
+        // padding to make room for command, query and status lines
+        const paddingTop = 3
+        const MAX_HEIGHT = ( stdout.rows - paddingTop )
+
         // max lines to use for printing matched results
-        const maxPrintedLines = Math.min( _matches.length, MIN_HEIGHT )
+        let maxPrintedLines = Math.min( _matches.length, MIN_HEIGHT )
+        if ( _opts.height >= 0 ) {
+          const heightPercent = Math.min( _opts.height / 100, 1 )
+          // console.log(heightPercent)
+          const heightNormalized = Math.floor( heightPercent * MAX_HEIGHT )
+          // console.log(heightNormalized)
+          maxPrintedLines = Math.min( _matches.length, heightNormalized )
+          maxPrintedLines = Math.max( maxPrintedLines, MIN_HEIGHT )
+        }
 
         let paddingBottom = 2 // 1 extra padding at the bottom when scrolling down
         if ( _matches.length <= MIN_HEIGHT ) {
