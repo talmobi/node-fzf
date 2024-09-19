@@ -35,19 +35,23 @@ const opts = {
   /* required */
   list: [ 'whale', 'giraffe', 'monkey' ],
 
-  /* optional (and defaults) */
+  /* (optional) */
   // filtering mode (user can change modes by pressing ctrl-s)
   mode: 'fuzzy' || 'normal',
 
+  /* (optional) */
   // prefill user input
   prefill: '',
 
+  /* (optional) */
   // % of screen to use to display results (minimum/defaults to 6 rows)
   height: 0, // ex: 40 for 40%, 100 for 100%
 
+  /* (optional) */
   // text before each displayed line, list index supplied as arg
   prelinehook: function ( index ) { return '' },
 
+  /* (optional) */
   // text after each displayed line, list index supplied as arg
   postlinehook: function ( index ) { return '' }
 }
