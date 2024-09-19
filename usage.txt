@@ -4,6 +4,8 @@ Options:
   -n, --normal, --exact   Use normal/exact text matching instead of fuzzy matching.
   -h, --help              Display help (this text)
   -q, --query             Start search with the given query prefilled.
+  --keep-right            Fit to show end of result text (toggled with ctrl-e)
+  --height                % of screen space to use to for results (default 6 rows)
 
 Keyboard:
   <ctrl-s>                      switch between search modes (fuzzy, normal/exact)
@@ -12,7 +14,7 @@ Keyboard:
   <ctrl-d>                      scroll down by page size
   <ctrl-u>                      scroll up by page size
   <ctrl-a>                      jump to start of input
-  <ctrl-e>                      jump to end of input
+  <ctrl-e>                      jump to end of input (and toggles --keep-right)
   <esc>,<ctrl-q>,<ctrl-c>       cancel
   <return>,<ctrl-m>             trigger callback/promise with current selection and exit
   <ctrl-w>                      delete last word from input
@@ -23,3 +25,4 @@ Keyboard:
 Examples:
   find . | nfzf
   cat log.txt | nfzf -n
+  mpv "`find ~/Dropbox/music/ | nfzf --exact --keep-right`"
