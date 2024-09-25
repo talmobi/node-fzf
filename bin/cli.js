@@ -37,6 +37,8 @@ function run ()
 
         // Start finder with given prefilled query (similar to fzf)
         query: argv.query || argv.q,
+        selectOne: argv['1'] || argv['select-1'] || argv['select-one'],
+
         height: argv.height,
         keepRight: !!argv['keep-right'],
       }
@@ -59,6 +61,8 @@ function run ()
 
       // Start finder with given prefilled query (similar to fzf)
       query: argv.query || argv.q,
+      selectOne: argv['1'] || argv['select-1'] || argv['select-one'],
+
       height: argv.height,
       keepRight: !!argv['keep-right'],
     }

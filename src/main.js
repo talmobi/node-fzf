@@ -799,6 +799,9 @@ function queryUser ( opts, callback )
 
     function render ()
     {
+      render._count = render._count || 0
+      render._count++
+
       const width = stdout.columns || clc.windowSize.width
       const height = stdout.rows || clc.windowSize.height
       // console.log( 'window height: ' + height )
@@ -979,6 +982,15 @@ function queryUser ( opts, callback )
         // item.. )
         if ( !_selectedItem ) {
           _selectedItem = _matches[ 0 ]
+        }
+
+        if (render._count === 1 && _matches.length === 1 && _opts.selectOne ) {
+          // console.log(' === attempting to select one === ')
+          _selectedItem = _matches[ 0 ]
+          cleanDirtyScreen()
+          process.nextTick(function () {
+            handleKeypress( '', { name: 'return' } )
+          })
         }
 
         // print the matches

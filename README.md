@@ -45,6 +45,11 @@ const opts = {
   query: '',
 
   /* (optional) */
+  // If there is only one match for the initial query (--query), do not
+  // start interactive finder and automatically select the only match
+  selectOne: false,
+
+  /* (optional) */
   // % of screen to use to display results (minimum/defaults to 6 rows)
   height: 0, // ex: 40 for 40%, 100 for 100%
 

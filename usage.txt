@@ -4,6 +4,9 @@ Options:
   -n, --normal, --exact   Use normal/exact text matching instead of fuzzy matching.
   -h, --help              Display help (this text)
   -q, --query             Start search with the given query prefilled.
+  -1, --select-1          If there is only one match for the initial query
+                            (--query), do not start interactive finder and
+                            automatically select the only match
   --keep-right            Fit to show end of result text (toggled with ctrl-e)
   --height                % of screen space to use to for results (default 6 rows)
 
