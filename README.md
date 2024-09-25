@@ -18,6 +18,7 @@ nfzf
 
 # using pipes
 find . | nfzf | xargs cat | less
+mpv "`find ~/Dropbox/music | nfzf --exact --keep-right`" --no-audio-display
 alias merge="git branch | nfzf | xargs git merge"
 alias checkout="git branch | nfzf | xargs git checkout"
 ```
