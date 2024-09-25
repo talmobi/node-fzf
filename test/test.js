@@ -664,7 +664,7 @@ test( 'test opts.nolist, opts.label promise', async function ( t ) {
   t.equal( r.query, 'Mollie T. Muriel' )
 } )
 
-test( 'test prefilled query', async function ( t ) {
+test( 'test prefilled query (-q, --query)', async function ( t ) {
   t.plan( 1 )
 
   // prepare mocked user input for nfzf
