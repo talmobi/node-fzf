@@ -21,7 +21,7 @@ if ( argv.h || argv.help ) {
   process.exit()
 }
 
-const normalMode = ( argv.n || argv.normal || argv.norm || argv.exact)
+const normalMode = ( argv.n || argv.normal || argv.norm || argv.e || argv.exact)
 
 return run()
 
