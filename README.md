@@ -42,7 +42,7 @@ const opts = {
 
   /* (optional) */
   // prefill user input
-  prefill: '',
+  query: '',
 
   /* (optional) */
   // % of screen to use to display results (minimum/defaults to 6 rows)
