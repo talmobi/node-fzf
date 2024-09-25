@@ -684,6 +684,124 @@ test( 'test prefilled query (-q, --query)', async function ( t ) {
   t.equal( r.query, 'Apa the Mollie' )
 } )
 
+test( 'test selectOne (-1, --select-1) with 1 result', async function ( t ) {
+  const opts = {
+    list: require( '../test/animals.json' ) ,
+    query: 'Gi', // should only match "Giraffe"
+    mode: 'normal',
+    selectOne: true,
+  }
+  const timeout = setTimeout(function () {
+    t.fail('error: selectOne test timed out')
+    process.exit(1)
+  }, 100)
+  const r = await nfzf( opts )
+  clearTimeout(timeout)
+  log( r )
+
+  t.equal( r.selected.value, 'Giraffes', 'Giraffes found' )
+  t.equal( r.query, 'Gi', 'Gi was prefilled' )
+  t.end()
+} )
+
+test( 'test selectOne (-1, --select-1) with 2 results', async function ( t ) {
+  const opts = {
+    list: require( '../test/animals.json' ) ,
+    query: 'do', // should match Dogs and Donkeys
+    mode: 'normal',
+    selectOne: true,
+  }
+  const timeout = setTimeout(function () {
+    t.pass('did not select automatically because more than 1 result')
+
+    process.nextTick( function () {
+      // ctrl-j ( \x0A ) // select the second result (donkeys)
+      stdin.send( '\x0A\r' )
+    } )
+  }, 100)
+  const r = await nfzf( opts )
+  clearTimeout(timeout)
+  log( r )
+
+  t.equal( r.selected.value, 'Donkeys', 'Donkeys found' )
+  t.equal( r.query, 'do', 'do was prefilled' )
+  t.end()
+} )
+
+test( 'test selectOne (-1, --select-1) with no query', async function ( t ) {
+  const opts = {
+    list: require( '../test/animals.json' ) ,
+    mode: 'normal',
+    selectOne: true,
+  }
+  const timeout = setTimeout(function () {
+    t.pass('did not select automatically because more than 1 result')
+
+    process.nextTick( function () {
+      // ctrl-j ( \x0A ) // select the second result (donkeys)
+      stdin.send( '\x0A\x0A\r' )
+    } )
+  }, 100)
+  const r = await nfzf( opts )
+  clearTimeout(timeout)
+  log( r )
+
+  t.equal( r.selected.value, 'Bats', 'Bats found' )
+  t.equal( r.query, '', 'no query found' )
+  t.end()
+} )
+
+test( 'test selectOne (-1, --select-1) with no query but with a list of 1', async function ( t ) {
+  const opts = {
+    list: require( '../test/animals.json' ).slice(19, 20), // [ Flamingos ]
+    mode: 'normal',
+    selectOne: true,
+  }
+  const timeout = setTimeout(function () {
+    t.fail('error: selectOne test timed out')
+    process.exit(1)
+  }, 100)
+  const r = await nfzf( opts )
+  clearTimeout(timeout)
+  log( r )
+
+  t.equal( r.selected.value, 'Flamingos', 'Flamingos found' )
+  t.equal( r.query, '', 'no query found' )
+  t.end()
+} )
+
+test( 'test selectOne (-1, --select-1) -- should not auto select single match after initial load', async function ( t ) {
+  t.plan(3)
+  const opts = {
+    list: require( '../test/animals.json' ),
+    mode: 'normal',
+    query: 'do',
+    selectOne: true,
+  }
+
+  process.nextTick( function () {
+    // add a 'g' to complete query for "Dog" which should change to match 1
+    stdin.send( 'g' )
+  } )
+  const timeout = setTimeout(function () {
+    t.pass('did not automatically select Dog after initial load')
+    process.nextTick( function () {
+      // ctrl-h ( \x08 ) ( backspace )
+      stdin.send( '\x08\x08\x08monk' )
+
+      process.nextTick( function () {
+        stdin.send( 'eys\r' )
+      } )
+    } )
+  }, 100)
+  const r = await nfzf( opts )
+  clearTimeout(timeout)
+  log( r )
+
+  t.equal( r.selected.value, 'Monkeys', 'Monkeys found' )
+  t.equal( r.query, 'monkeys', 'full query OK' )
+} )
+
 // TODO test --keep-right somehow..
 // TODO implement and test for --keep-left?
 // TODO add support for query or using '|' similar to fzf?
