@@ -1,6 +1,8 @@
 [![npm](https://img.shields.io/npm/v/node-fzf.svg?maxAge=3600&style=flat-square)](https://www.npmjs.com/package/node-fzf)
 [![npm](https://img.shields.io/npm/dm/node-fzf.svg?maxAge=3600)](https://www.npmjs.com/package/node-fzf)
 [![npm](https://img.shields.io/npm/l/node-fzf.svg?maxAge=3600&style=flat-square)](https://github.com/talmobi/node-fzf/blob/master/LICENSE)
+![mac](https://github.com/talmobi/yt-search/actions/workflows/mac-node.js.yml/badge.svg?branch=master)
+![ubuntu](https://github.com/talmobi/yt-search/actions/workflows/ubuntu-node.js.yml/badge.svg?branch=master)
 
 #  node-fzf
 [fzf](https://github.com/junegunn/fzf) inspired fuzzy CLI list selection 🎀
