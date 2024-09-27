@@ -799,9 +799,6 @@ function queryUser ( opts, callback )
 
     function render ()
     {
-      render._count = render._count || 0
-      render._count++
-
       const width = stdout.columns || clc.windowSize.width
       const height = stdout.rows || clc.windowSize.height
       // console.log( 'window height: ' + height )
@@ -852,6 +849,8 @@ function queryUser ( opts, callback )
         // get rid of dirt when being pushed above MIN_HEIGHT
         // from the bottom of the terminal
         cleanDirtyScreen()
+
+        if (_opts._selectOneActive === undefined) _opts._selectOneActive = true
       }
       render.init = true
 
@@ -984,7 +983,7 @@ function queryUser ( opts, callback )
           _selectedItem = _matches[ 0 ]
         }
 
-        if (render._count === 1 && _matches.length === 1 && _opts.selectOne ) {
+        if (_opts._selectOneActive && _matches.length === 1 && _opts.selectOne ) {
           // console.log(' === attempting to select one === ')
           _selectedItem = _matches[ 0 ]
           cleanDirtyScreen()
@@ -992,6 +991,7 @@ function queryUser ( opts, callback )
             handleKeypress( '', { name: 'return' } )
           })
         }
+        _opts._selectOneActive = false
 
         // print the matches
         _printedMatches = 0

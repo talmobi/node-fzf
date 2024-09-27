@@ -67,7 +67,7 @@ function run ()
       keepRight: !!argv['keep-right'],
     }
 
-
+    opts._selectOneActive = false
     const api = nfzf( opts, function ( result ) {
       if ( result.selected ) {
         console.log( result.selected.value )
@@ -114,6 +114,7 @@ function run ()
         list.push( line )
       } )
 
+      api._selectOneActive = true
       api.update( list )
     } )
 
