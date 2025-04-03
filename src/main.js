@@ -12,14 +12,26 @@ const stdout = ttys.stdout
 const size = require( 'window-size' )
 
 // print/render to the terminal
-const clc = require( 'cli-color' )
+const colors = require( 'picocolors' )
+
+// https://github.com/chalk/ansi-regex/blob/f338e1814144efb950276aac84135ff86b72dc8e/index.js#L1C16-L10C2
+const ansiRegex = function() {
+	// Valid string terminator sequences are BEL, ESC\, and 0x9c
+	const ST = '(?:\\u0007|\\u001B\\u005C|\\u009C)';
+	const pattern = [
+		`[\\u001B\\u009B][[\\]()#;?]*(?:(?:(?:(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]+)*|[a-zA-Z\\d]+(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]*)*)?${ST})`,
+		'(?:(?:\\d{1,4}(?:;\\d{0,4})*)?[\\dA-PR-TZcf-nq-uy=><~]))',
+	].join('|');
+
+	return new RegExp(pattern, 'g');
+}()
 
 // get printed width of text
 // ex. 漢字 are 4 characters wide but still
 // only 2 characters in length
 const _stringWidth = require( 'string-width' )
 function stringWidth ( str ) {
-  return Math.max( clc.getStrippedLength( str ), _stringWidth( str ) )
+  return Math.max( str.replace(ansiRegex, '').length, _stringWidth( str ) )
 }
 
 // available filtering modes ( fuzzy by default )
@@ -29,7 +41,45 @@ module.exports = queryUser
 
 // helper to only get user input
 module.exports.getInput = getInput
-module.exports.cliColor = clc
+module.exports.cliColor = colors
+
+function xterm ( index ) {
+  return function (text) {
+    // https://github.com/jaywcjlove/colors-cli/blob/d3a3152ec2f087c46655e7d2a663ef637ed5fea5/lib/color.js#L121
+    return colors.isColorSupported ? '\x1b[38;5;' + index + 'm' + text + '\x1b[0m' : text
+  }
+}
+
+function bgXterm ( index ) {
+  return function (text) {
+    // https://github.com/jaywcjlove/colors-cli/blob/d3a3152ec2f087c46655e7d2a663ef637ed5fea5/lib/color.js#L126
+    return colors.isColorSupported ? '\x1b[48;5;' + index + 'm' + text + '\x1b[0m' : text
+  }
+}
+
+// https://github.com/medikoo/cli-color/blob/b9080d464c76930b3cbfb7f281999fcc26f39fb1/move.js#L8-L13
+function getMove (control) {
+	return function (num) {
+		return num ? '\x1b[' + num + control : ''
+	}
+}
+
+const moveUp = getMove("A");
+const moveDown = getMove("B")
+const moveRight = getMove("C")
+const moveLeft = getMove("D")
+
+function moveTo(x, y) {
+  x++
+  y++
+  return '\x1b[' + y + ';' + x + 'H'
+}
+
+// https://github.com/medikoo/cli-color/blob/b9080d464c76930b3cbfb7f281999fcc26f39fb1/erase.js#L7C9-L7C16
+const eraseLine = '\x1b[2K'
+
+// https://github.com/medikoo/cli-color/blob/b9080d464c76930b3cbfb7f281999fcc26f39fb1/erase.js#L4
+const eraseScreen = '\x1b[2J'
 
 function getInput ( label, callback )
 {
@@ -456,13 +506,13 @@ function queryUser ( opts, callback )
     stdin.setEncoding( 'utf8' )
     stdin.on( 'keypress', handleKeypress )
 
-    const clcBgGray = clc.bgXterm( 236 )
-    const clcFgArrow = clc.xterm( 198 )
-    const clcFgBufferArrow = clc.xterm( 110 )
-    const clcFgGreen = clc.xterm( 143 )
-    // const clcFgMatchGreen = clc.xterm( 151 )
-    const clcFgModeStatus = clc.xterm( 110 )
-    const clcFgMatchGreen = clc.xterm( 107 )
+    const clcBgGray = bgXterm( 236 )
+    const clcFgArrow = xterm( 198 )
+    const clcFgBufferArrow = xterm( 110 )
+    const clcFgGreen = xterm( 143 )
+    // const clcFgMatchGreen = xterm( 151 )
+    const clcFgModeStatus = xterm( 110 )
+    const clcFgMatchGreen = xterm( 107 )
 
     // get matches based on the search mode
     function getMatches ( mode, filter, text )
@@ -783,27 +833,28 @@ function queryUser ( opts, callback )
         2 + _printedMatches
       )
 
-      stdout.write( clc.move( -width ) )
+      stdout.write( moveLeft( width ) )
 
       for ( let i = 0; i < writtenHeight; i++ ) {
-        stdout.write( clc.move.down( 1 ) )
+        stdout.write( moveDown( 1 ) )
       }
 
       for ( let i = 0; i < writtenHeight; i++ ) {
-        stdout.write( clc.erase.line )
-        stdout.write( clc.move.up( 1 ) )
+        stdout.write( eraseLine )
+        stdout.write( moveUp( 1 ) )
       }
 
-      stdout.write( clc.erase.line )
+      stdout.write( eraseLine )
     }
 
     function render ()
     {
-      const width = stdout.columns || clc.windowSize.width
-      const height = stdout.rows || clc.windowSize.height
+      // https://github.com/medikoo/cli-color/blob/b9080d464c76930b3cbfb7f281999fcc26f39fb1/window-size.js#L6-L7
+      const width = stdout.columns || process.stdout.columns || 0
+      const height = stdout.rows || process.stdout.rows || 0
       // console.log( 'window height: ' + height )
-      // !debug && stdout.write( clc.erase.screen )
-      // stdout.write( clc.move.to( 0, height ) )
+      // !debug && stdout.write( eraseScreen )
+      // stdout.write( moveTo( 0, height ) )
 
       cleanDirtyScreen()
 
@@ -844,7 +895,7 @@ function queryUser ( opts, callback )
       const inputLabelHeight = inputLabels.length - 1
 
       if ( render.init ) {
-        stdout.write( clc.move.up( inputLabelHeight ) )
+        stdout.write( moveUp( inputLabelHeight ) )
       } else {
         // get rid of dirt when being pushed above MIN_HEIGHT
         // from the bottom of the terminal
@@ -944,19 +995,19 @@ function queryUser ( opts, callback )
 
         // print mode ui legend
         if ( _opts.mode === 'fuzzy' ) {
-          statusLine += ( clc.blackBright( ' ctrl-s' ) )
+          statusLine += ( colors.blackBright( ' ctrl-s' ) )
         } else {
-          statusLine += ( clc.yellowBright( ' ctrl-s' ) )
+          statusLine += ( colors.yellowBright( ' ctrl-s' ) )
         }
 
         // print --keep-right ui legend
-        let keepRightColor = clc.blackBright
+        let keepRightColor = colors.blackBright
         if (_opts.keepRight) {
-          keepRightColor = clc.yellowBright
+          keepRightColor = colors.yellowBright
         }
         statusLine += ( keepRightColor( ' ctrl-e' ) )
 
-        statusLine += ( ' ' + clc.magenta( `[${ scrollOffset > 0 ? '+' : '' }${ scrollOffset }]` ) )
+        statusLine += ( ' ' + colors.magenta( `[${ scrollOffset > 0 ? '+' : '' }${ scrollOffset }]` ) )
 
         // limit statusline to terminal width
         let statusLineEndIndex = statusLine.length
@@ -969,7 +1020,7 @@ function queryUser ( opts, callback )
         if ( statusLine.length < statusLineEndIndex ) {
           // add red space to prevent sliced colored text
           // from bleeding forwards
-          statusLine = statusLine + clc.red( ' ' )
+          statusLine = statusLine + colors.red( ' ' )
         }
 
         statusLine += ( '\n' )
@@ -1070,7 +1121,7 @@ function queryUser ( opts, callback )
         }
 
         // move back to cursor position after printing matches
-        stdout.write( clc.move.up( 2 + _printedMatches ) )
+        stdout.write( moveUp( 2 + _printedMatches ) )
       }
 
       if ( _printedMatches < 1 ) {
@@ -1081,14 +1132,14 @@ function queryUser ( opts, callback )
       // if ( inputLabelHeight > 0 ) stdout.write( clc.move.up( inputLabelHeight ) )
 
       // reset cursor left position
-      stdout.write( clc.move( -stdout.columns ) )
+      stdout.write( moveLeft( stdout.columns ) )
 
       const cursorOffset = stringWidth( inputBuffer.slice( 0, cursorPosition ) )
 
       const cursorLeftPadding = stringWidth( lastInputLabel )
 
       // set cursor left position
-      stdout.write( clc.move.right( cursorLeftPadding + cursorOffset ) )
+      stdout.write( moveRight( cursorLeftPadding + cursorOffset ) )
     }
 
     stdin.setRawMode && stdin.setRawMode( true )
