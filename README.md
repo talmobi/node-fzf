@@ -163,6 +163,7 @@ easy fuzzy list selection UI for NodeJS CLI programs.
 
 ## How
 Mostly [picocolors](https://github.com/alexeyraspopov/picocolors) for dealing with the terminal rendering
+~~Mostly [cli-color](https://github.com/medikoo/cli-color) for dealing with the terminal rendering~~
 and [ttys](https://github.com/TooTallNate/ttys) to hack the ttys to simultaneously
 read from non TTY stdin and read key inputs from TTY stdin -> So that we can get piped input while
 also at the same time receive and handle raw keyboard input.
