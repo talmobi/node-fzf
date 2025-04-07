@@ -40,8 +40,7 @@
     "redstar": "0.0.2",
     "restore-cursor": "~3.1.0",
     "string-width": "~2.1.1",
-    "ttys": "0.0.3",
-    "window-size": "~1.1.1"
+    "ttys": "0.0.3"
   },
   "devDependencies": {
     "mock-stdin": "~1.0.0",
