@@ -9,8 +9,6 @@ const ttys = require( 'ttys' )
 const stdin = ttys.stdin
 const stdout = ttys.stdout
 
-const size = require( 'window-size' )
-
 // print/render to the terminal
 const colors = require( 'picocolors' )
 
@@ -90,6 +88,15 @@ function getInput ( label, callback )
   }
 
   return queryUser( opts, callback )
+}
+
+// https://github.com/medikoo/cli-color/blob/b9080d464c76930b3cbfb7f281999fcc26f39fb1/window-size.js#L6-L7
+function getWindowWidth() {
+  return stdout.columns || process.stdout.columns || 0
+}
+
+function getWindowHeight() {
+  return stdout.rows || process.stdout.rows || 0
 }
 
 function queryUser ( opts, callback )
@@ -212,7 +219,7 @@ function queryUser ( opts, callback )
 
     checkResize.prevCols = stdout.columns
     function checkResize () {
-      const cols = size.get().width
+      const cols = getWindowWidth()
       if ( cols != checkResize.prevCols ) {
         stdout.columns = cols
         handleResize()
@@ -827,7 +834,7 @@ function queryUser ( opts, callback )
 
     function cleanDirtyScreen ()
     {
-      const width = stdout.columns
+      const width = getWindowWidth()
       const writtenHeight = Math.max(
         MIN_HEIGHT,
         2 + _printedMatches
@@ -849,9 +856,7 @@ function queryUser ( opts, callback )
 
     function render ()
     {
-      // https://github.com/medikoo/cli-color/blob/b9080d464c76930b3cbfb7f281999fcc26f39fb1/window-size.js#L6-L7
-      const width = stdout.columns || process.stdout.columns || 0
-      const height = stdout.rows || process.stdout.rows || 0
+      // const height = getWindowHeight()
       // console.log( 'window height: ' + height )
       // !debug && stdout.write( eraseScreen )
       // stdout.write( moveTo( 0, height ) )
