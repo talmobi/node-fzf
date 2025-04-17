@@ -34,12 +34,12 @@
     "email": "talmo.christian@gmail.com"
   },
   "dependencies": {
+    "fast-string-width": "^1.1.0",
     "keypress": "~0.2.1",
     "minimist": "~1.2.5",
     "picocolors": "~1.1.1",
     "redstar": "0.0.2",
     "restore-cursor": "~3.1.0",
-    "string-width": "~2.1.1",
     "ttys": "0.0.3",
     "window-size": "~1.1.1"
   },

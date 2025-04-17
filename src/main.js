@@ -29,7 +29,7 @@ const ansiRegex = function() {
 // get printed width of text
 // ex. 漢字 are 4 characters wide but still
 // only 2 characters in length
-const _stringWidth = require( 'string-width' )
+const { default: _stringWidth } = require( 'fast-string-width' )
 function stringWidth ( str ) {
   return Math.max( str.replace(ansiRegex, '').length, _stringWidth( str ) )
 }
